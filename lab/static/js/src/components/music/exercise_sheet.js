@@ -10,6 +10,7 @@ define([
   "./stave",
   "./stave_notater",
   "./exercise_note_factory",
+  "./rendering/vexflow_adapter",
 ], function (
   $,
   $UI,
@@ -20,7 +21,8 @@ define([
   FontParser,
   Stave,
   StaveNotater,
-  ExerciseNoteFactory
+  ExerciseNoteFactory,
+  VexFlowAdapter
 ) {
   "use strict";
 
@@ -353,6 +355,23 @@ define([
      * @return this
      */
     renderStaves: function (exercise_midi_nums = false) {
+      var definition = this.exerciseContext.getDefinition();
+      
+      // Use VexFlow adapter for chorale exercises
+      if (definition.isChorale()) {
+        var score = definition.getScore();
+        if (score && score.measures && score.measures.length > 0) {
+          var canvas = this.el[0];
+          VexFlowAdapter.render(score, this.vexRenderer, {
+            width: canvas.width,
+            height: canvas.height,
+            maxMeasures: 4  // Show first 4 measures for now
+          });
+        }
+        return this;
+      }
+      
+      // Legacy rendering for non-chorale exercises
       const show_barlines = true;
 
       var i,

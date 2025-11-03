@@ -31,7 +31,30 @@ define(["lodash", "app/config"], function (_, Config) {
     analytical_pcs: "analytical_pcs",
     figured_bass: "figured_bass",
     figured_bass_pcs: "figured_bass_pcs",
+    chorale: "chorale",
   };
+
+  /**
+   * Converts a CIR-style key (e.g., "F", "Fm", "Bb", "C#m") to HarmonyLab key format (e.g., "jF_", "iF_", "jBb", "iC#").
+   *
+   * @param {string} cirKey - Key in CIR format
+   * @return {string} Key in HarmonyLab format
+   */
+  function convertCIRKeyToHarmonyLabKey(cirKey) {
+    if (!cirKey || typeof cirKey !== 'string') {
+      return 'jC_'; // default to C major
+    }
+    
+    // Check if minor (ends with 'm')
+    var isMinor = cirKey.endsWith('m');
+    var prefix = isMinor ? 'i' : 'j';
+    var note = isMinor ? cirKey.slice(0, -1) : cirKey;
+    
+    // Add underscore suffix for naturals (no accidentals)
+    var suffix = (note.indexOf('#') === -1 && note.indexOf('b') === -1) ? '_' : '';
+    
+    return prefix + note + suffix;
+  }
 
   _.extend(ExerciseDefinition.prototype, {
     /**
@@ -136,6 +159,54 @@ define(["lodash", "app/config"], function (_, Config) {
       return this.exercise.staffDistribution;
     },
     /**
+     * Returns the exercise type.
+     *
+     * @return {string}
+     */
+    getType: function () {
+      return this.exercise.type;
+    },
+    /**
+     * Returns true if this is a chorale exercise.
+     *
+     * @return {boolean}
+     */
+    isChorale: function () {
+      return this.exercise.type === "chorale";
+    },
+    /**
+     * Returns the score for chorale exercises.
+     *
+     * @return {object}
+     */
+    getScore: function () {
+      return this.exercise.score || {};
+    },
+    /**
+     * Returns the mode for chorale exercises (e.g., "play-all-voices").
+     *
+     * @return {string}
+     */
+    getMode: function () {
+      return this.exercise.mode || "play-all-voices";
+    },
+    /**
+     * Returns display settings for chorale exercises.
+     *
+     * @return {object}
+     */
+    getDisplay: function () {
+      return this.exercise.display || {};
+    },
+    /**
+     * Returns grading settings for chorale exercises.
+     *
+     * @return {object}
+     */
+    getGrading: function () {
+      return this.exercise.grading || {};
+    },
+    /**
      * Returns the time signature setting.
      *
      * @return {string}
@@ -191,6 +262,32 @@ define(["lodash", "app/config"], function (_, Config) {
     parse: function (definition) {
       var exercise = {};
       var problems = [];
+
+      // Special handling for chorale exercises
+      if (definition.type === "chorale") {
+        exercise.type = "chorale";
+        exercise.score = definition.score || {};
+        exercise.mode = definition.mode || "play-all-voices";
+        exercise.targetVoices = definition.targetVoices || "all";
+        exercise.display = definition.display || {};
+        exercise.grading = definition.grading || {};
+        exercise.excerpt = definition.excerpt || {};
+        
+        // Convert CIR key format to HarmonyLab key format
+        var cirKey = (definition.score && definition.score.meta && definition.score.meta.key) || definition.key || "C";
+        exercise.key = convertCIRKeyToHarmonyLabKey(cirKey);
+        // Don't set keySignature - let KeySignature model derive it from key
+        exercise.keySignature = false;
+        
+        exercise.introText = definition.introText || false;
+        exercise.reviewText = definition.reviewText || false;
+        exercise.problems = []; // Chorales don't use the chord-based problem structure
+        exercise.exerciseList = []; // Chorales are standalone, not part of a list
+        exercise.nextExercise = definition.nextExercise || false;
+        exercise.staffDistribution = definition.staffDistribution || "chorale";
+        exercise.semibrevesPerLine = definition.semibrevesPerLine || 4;
+        return exercise;
+      }
 
       // check for a chord entry which may be an array of note numbers
       // to represent one chord, or an array of arrays to represent

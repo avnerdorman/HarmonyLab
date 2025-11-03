@@ -31,6 +31,7 @@ from apps.exercises.models import (
 
 import json
 import copy
+import os
 
 # from django.core.mail import send_mail
 
@@ -381,6 +382,42 @@ class RefreshExerciseDefinition(RequirejsView):
         )
         # self.requirejs_context.add_to_view(context)
         return JsonResponse(data=exercise_context)
+
+
+def dev_corpus_bach_json(request, filename):
+    """Serve exported corpus JSON files from data/corpus/bach during development.
+
+    Security: only available when DEBUG=True. Limits filename to a safe subset and
+    serves files only from the expected directory.
+    """
+    if not settings.DEBUG:
+        raise Http404()
+
+    # basic filename sanity: allow alnum, dash, underscore, dot
+    import re
+
+    if not re.match(r"^[\w\-\.]+$", filename or ""):
+        raise Http404()
+
+    # enforce .json extension
+    if not filename.endswith(".json"):
+        # allow caller to omit extension
+        filename = filename + ".json"
+
+    base_dir = getattr(settings, "BASE_DIR", os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    corpus_dir = os.path.join(base_dir, "data", "corpus", "bach")
+    file_path = os.path.normpath(os.path.join(corpus_dir, filename))
+
+    # ensure path is under corpus_dir
+    if not file_path.startswith(os.path.abspath(corpus_dir) + os.sep):
+        raise Http404()
+
+    if not os.path.exists(file_path):
+        raise Http404()
+
+    with open(file_path, "r") as f:
+        payload = json.load(f)
+    return JsonResponse(payload, safe=False)
 
 
 class ExerciseView(RequirejsView):

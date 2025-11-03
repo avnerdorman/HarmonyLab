@@ -19,6 +19,7 @@ from .views import (
     RefreshExerciseDefinition,
     CourseView,
     exercise_performance_history,
+    dev_corpus_bach_json,
 )
 
 app_name = "lab"
@@ -93,5 +94,11 @@ urlpatterns = [
         "admin/exercises/playlist/<str:playlist_id>/performances/",
         playlist_performance_view,
         name="performance-report",
+    ),
+    # Dev-only: serve exported corpus JSONs for local testing
+    path(
+        "ajax/dev/corpus/bach/<str:filename>",
+        dev_corpus_bach_json,
+        name="dev-corpus-bach-json",
     ),
 ]

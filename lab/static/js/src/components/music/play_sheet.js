@@ -9,6 +9,8 @@ define([
   "./stave",
   "./stave_notater",
   "./play_note_factory",
+  "./score_model",
+  "./rendering/vexflow_adapter",
 ], function (
   $,
   _,
@@ -18,7 +20,9 @@ define([
   Component,
   Stave,
   StaveNotater,
-  PlayNoteFactory
+  PlayNoteFactory,
+  ScoreModel,
+  VexflowAdapter
 ) {
   "use strict";
 
@@ -45,6 +49,12 @@ define([
    */
   var PlaySheetComponent = function (settings) {
     this.settings = settings || {};
+    this._corpusFile = null;         // last loaded file name
+    this._corpusPayload = null;      // cached JSON payload
+    this._vfState = {                // renderer UI state bridge
+      selectVoices: null,
+      octaveShift: null,
+    };
 
     if ("chords" in this.settings) {
       this.chords = this.settings.chords;
@@ -64,6 +74,36 @@ define([
   PlaySheetComponent.prototype = new Component();
 
   _.extend(PlaySheetComponent.prototype, {
+    _getQueryParam: function (name) {
+      // Backward-compat wrapper; prefer _getAllQueryParams.
+      var all = this._getAllQueryParams();
+      return all && name in all ? all[name] : null;
+    },
+    _getAllQueryParams: function () {
+      // Robust, regex-free query parser (URLSearchParams where available)
+      var out = {};
+      try {
+        if (typeof URLSearchParams !== 'undefined') {
+          var sp = new URLSearchParams(window.location.search || "");
+          sp.forEach(function(v, k){ out[k] = v; });
+          return out;
+        }
+      } catch (_) {}
+      try {
+        var qs = window.location.search || "";
+        if (qs.charAt(0) === '?') qs = qs.slice(1);
+        if (!qs) return out;
+        var parts = qs.split('&');
+        for (var i = 0; i < parts.length; i++) {
+          if (parts[i] === '') continue;
+          var kv = parts[i].split('=');
+          var k = decodeURIComponent(kv[0] || "");
+          var v = decodeURIComponent(kv.slice(1).join('=') || "");
+          if (k) out[k] = v;
+        }
+      } catch (_) {}
+      return out;
+    },
     /**
      * Initializes the sheet.
      *
@@ -114,12 +154,133 @@ define([
      */
     render: function () {
       this.clear();
-      this.renderStaves();
+
+      // Feature flag: render a sample polyphonic measure using the new adapter when '?newvf' is present
+      // Using simple string indexOf to avoid CSP issues with URLSearchParams
+      var useNewAdapter = window.location.search.indexOf("newvf") !== -1;
+
+      if (useNewAdapter) {
+        var width = this.getWidth();
+        var height = this.getHeight();
+        var params = this._getAllQueryParams ? this._getAllQueryParams() : {};
+        var corpusFile = params.loadCorpus || this._getQueryParam('loadCorpus');
+        var self = this;
+        
+        if (corpusFile) {
+          console.log('Loading corpus file:', corpusFile);
+          // Change "DISPLAY OPTIONS" to "CHORALE STYLE" for corpus mode
+          $('.js-btn-menu').text('CHORALE STYLE');
+          
+          // Cache payload to avoid re-fetching on every UI change
+          var renderWithState = function(payload){
+            try {
+              if (payload && payload.score) {
+                // If corpus provides a key, sync the KeySignature model and header widget
+                // (only update if different to avoid infinite render loop)
+                if (payload.score.meta && payload.score.meta.key) {
+                  var mapped = self._mapMetaKeyToModelKey(payload.score.meta.key);
+                  if (mapped && self.keySignature.getKey() !== mapped) {
+                    try { 
+                      // Temporarily unbind to prevent re-render loop
+                      self.keySignature.unbind("change", self.render);
+                      self.keySignature.changeKey(mapped, true);
+                      self.keySignature.bind("change", self.render);
+                    } catch (e) { /* ignore */ }
+                  }
+                }
+                // Build selectVoices/octaveShift from URL or UI widgets
+                var q = self._getAllQueryParams ? self._getAllQueryParams() : {};
+                var voicesParam = q.voices || null;
+                var b8vb = q.b8vb || null;
+
+                var selectVoices = self._buildSelectVoices(voicesParam);
+                var octaveShift = b8vb ? { bass: -1 } : null;
+
+                // Remember state for subsequent re-renders
+                self._vfState.selectVoices = selectVoices;
+                self._vfState.octaveShift = octaveShift;
+
+                self._corpusPayload = payload;
+                self._corpusFile = corpusFile;
+
+                VexflowAdapter.render(payload.score, self.vexRenderer, { width: width, height: height, maxMeasures: 4, selectVoices: selectVoices, octaveShift: octaveShift });
+              } else {
+                alert('Corpus file loaded but missing .score');
+              }
+            } catch (e) {
+              alert('Error rendering corpus: ' + e.message);
+              console.error(e);
+            }
+          };
+
+          if (self._corpusPayload && self._corpusFile === corpusFile) {
+            renderWithState(self._corpusPayload);
+          } else {
+            $.getJSON('/ajax/dev/corpus/bach/' + encodeURIComponent(corpusFile))
+              .done(function(payload){
+                console.log('Corpus loaded:', payload);
+                renderWithState(payload);
+              })
+              .fail(function(xhr, status, error){
+                alert('Failed to load corpus: ' + xhr.status + ' ' + error);
+                console.error('AJAX error:', xhr, status, error);
+              });
+          }
+        } else {
+          try {
+            var sample = this.samplePolyphonicScore();
+            VexflowAdapter.render(sample, this.vexRenderer, { width: width, height: height, maxMeasures: 4 });
+          } catch (e) {
+            alert("Error in new renderer: " + e.message);
+            throw e;
+          }
+        }
+      } else {
+        this.renderStaves();
+      }
 
       /* save data for retrieval by MusicControlsComponent.onClickSaveJSON; this may not be the optimal or most professional solution */
       sessionStorage.setItem("current_state", this.dataForSave());
 
       return this;
+    },
+    // Map corpus meta.key (e.g., "F", "Bbm") to the KeySignature model key id (e.g., "jF_", "iBb")
+    _mapMetaKeyToModelKey: function(metaKey){
+      if (!metaKey || typeof metaKey !== 'string') return null;
+      // Normalize e.g., 'bb' to 'b', '##' stays '##'
+      var mk = metaKey.trim();
+      var isMinor = /m$/.test(mk);
+      var root = isMinor ? mk.slice(0, -1) : mk;
+      // Standardize symbols: 'Bb' stays, 'Cb' stays, 'F#' stays
+      // Build code: prefix i=minor, j=major; natural underscore for naturals
+      var accidental = '';
+      if (root.length > 1) accidental = root.slice(1); // '#', 'b'
+      var letter = root.charAt(0).toUpperCase();
+      var suffix = accidental === '' ? '_' : accidental; // '_' for natural
+      var code = (isMinor ? 'i' : 'j') + letter + suffix;
+      return code;
+    },
+    // Compute selectVoices from URL override or current UI state
+    _buildSelectVoices: function(voicesParam){
+      // URL override for quick testing
+      if (voicesParam === 'sb') {
+        return { treble: [0], bass: [1] };
+      }
+      // Use menu settings when available
+      try {
+        var pc = this.parentComponent; // MusicComponent
+        if (pc && pc.highlightConfig && pc.highlightConfig.enabled) {
+          if (pc.highlightConfig.mode && pc.highlightConfig.mode.solobass) {
+            return { treble: [], bass: [1] };
+          }
+        }
+        if (pc && pc.staffDistributionConfig && pc.staffDistributionConfig.staffDistribution) {
+          var dist = pc.staffDistributionConfig.staffDistribution;
+          if (dist === 'LH') return { treble: [], bass: [0,1] };
+          if (dist === 'RH') return { treble: [0,1], bass: [] };
+        }
+      } catch (e) {}
+      return null; // no filtering
     },
     /**
      * Clears the sheet.
@@ -387,6 +548,48 @@ define([
     onChordsUpdate: function () {
       this.updateStaves();
       this.render();
+    },
+
+    // Build a minimal polyphonic example for the adapter prototype
+    samplePolyphonicScore: function () {
+      var meta = { key: this.keySignature.getVexKey ? this.keySignature.getVexKey() : undefined, time: "4/4" };
+
+      // Measure 1: Treble - quarter + quarter + half (4 beats)
+      var m1Treble = ScoreModel.voice([
+        ScoreModel.note("C", 0, 5, "q", 0),
+        ScoreModel.note("D", 0, 5, "q", 0),
+        ScoreModel.note("E", 0, 5, "h", 0)
+      ], "up");
+
+      // Measure 1: Bass - dotted half + quarter (4 beats, different rhythm!)
+      var m1Bass = ScoreModel.voice([
+        ScoreModel.note("C", 0, 3, "h", 1),  // dotted half = 3 beats
+        ScoreModel.note("G", 0, 2, "q", 0)   // quarter = 1 beat
+      ], "down");
+
+      var treble1 = ScoreModel.staff("treble", [m1Treble]);
+      var bass1 = ScoreModel.staff("bass", [m1Bass]);
+      var meas1 = ScoreModel.measure(1, { treble: treble1, bass: bass1 });
+
+      // Measure 2: Treble - half + half (4 beats)
+      var m2Treble = ScoreModel.voice([
+        ScoreModel.note("G", 0, 5, "h", 0),
+        ScoreModel.note("F", 0, 5, "h", 0)
+      ], "up");
+
+      // Measure 2: Bass - four quarters (4 beats, busier rhythm!)
+      var m2Bass = ScoreModel.voice([
+        ScoreModel.note("E", 0, 3, "q", 0),
+        ScoreModel.note("D", 0, 3, "q", 0),
+        ScoreModel.note("C", 0, 3, "q", 0),
+        ScoreModel.note("B", 0, 2, "q", 0)
+      ], "down");
+
+      var treble2 = ScoreModel.staff("treble", [m2Treble]);
+      var bass2 = ScoreModel.staff("bass", [m2Bass]);
+      var meas2 = ScoreModel.measure(2, { treble: treble2, bass: bass2 });
+
+      return ScoreModel.score(meta, [meas1, meas2]);
     },
 
     /* solution for saving data as exercise; called by render() and saved to sessionStorage */

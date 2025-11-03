@@ -1,0 +1,4070 @@
+{
+  "source": {
+    "type": "musicxml-corpus",
+    "corpusId": "music21-bach-chorales",
+    "workId": "book4.abc"
+  },
+  "score": {
+    "meta": {
+      "key": "C",
+      "time": "4/4"
+    },
+    "measures": [
+      {
+        "number": 1,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "rest",
+                    "duration": {
+                      "type": "h",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 2,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "A",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "F",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 3,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 4,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "F",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "A",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "F",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 5,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 6
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 6,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "A",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "A",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "A",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "A",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 6
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "A",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 7,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 8,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "F",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "F",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "F",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 9,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "rest",
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 10,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "rest",
+                    "duration": {
+                      "type": "h",
+                      "dots": 1
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 11,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 12,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "F",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 13,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "A",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 6
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 6
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 6
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "A",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 14,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 6
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 6
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 6
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "A",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "F",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 15,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "F",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "A",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "B",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 6
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "F",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 16,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "F",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 17,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "A",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "G",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "F",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "E",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "D",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      },
+      {
+        "number": 18,
+        "staves": {
+          "treble": {
+            "clef": "treble",
+            "voices": [
+              {
+                "direction": "up",
+                "items": [
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "8",
+                      "dots": 1
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "16",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "note",
+                    "pitch": {
+                      "step": "C",
+                      "alter": 0,
+                      "octave": 5
+                    },
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  },
+                  {
+                    "kind": "rest",
+                    "duration": {
+                      "type": "q",
+                      "dots": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "bass": {
+            "clef": "bass",
+            "voices": []
+          }
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "start": 1440,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            72
+          ],
+          "holdsFromPrevious": []
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 1920,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 2400,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            79
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 2760,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            79
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 2880,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            79
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 3360,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            81
+          ],
+          "holdsFromPrevious": [
+            72,
+            79
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 3540,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 3720,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            77
+          ],
+          "holdsFromPrevious": [
+            72,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 3840,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 4320,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 4680,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 4800,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 5280,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            72
+          ],
+          "holdsFromPrevious": [
+            72,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 5460,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 5640,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 5760,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 6240,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            77
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 6600,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            81
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 6720,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 7080,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            77
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 7200,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 7560,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 7680,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            72
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 8160,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            72
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 8520,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            72
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 8640,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            72
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 9120,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            84
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 9480,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 9600,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            81
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 10080,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            81
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 10440,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            81
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 10560,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            81
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 11040,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            84
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 11400,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            81
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 11520,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 12000,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 12360,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 12480,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 12960,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 13320,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 13440,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            77
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 13800,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 13920,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            77
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 14280,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            77
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 14400,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 14760,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            72
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 14880,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 15240,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 15360,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 15840,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 16200,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 16320,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 17280,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 17640,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 19200,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 19680,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 20040,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 20160,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 20640,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 21000,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 21120,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 21600,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 21960,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 22080,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 22560,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 22740,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            77
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 22920,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 23040,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            81
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 23520,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            84
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 23880,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            84
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 24000,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            84
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 24480,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            81
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 24960,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 25440,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            84
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 25800,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            84
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 25920,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            84
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 26400,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            81
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 26580,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 26760,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            77
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 26880,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 27060,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            77
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 27240,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 27420,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            81
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 27600,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            83
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 27780,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            84
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 27960,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 28320,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            77
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 28440,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 28800,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            72,
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 29160,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 29280,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 29640,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 29760,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 30120,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            77
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 30240,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 30600,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 30720,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 31200,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            81
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 31380,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            79
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 31560,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            77
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 31740,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            76
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 32220,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            74
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 32640,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            72
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 33120,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            72
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 33480,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            72
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    },
+    {
+      "start": 33600,
+      "perStaff": {
+        "treble": {
+          "newOnsets": [
+            72
+          ],
+          "holdsFromPrevious": [
+            72,
+            74,
+            76,
+            77,
+            79,
+            81,
+            83,
+            84
+          ]
+        },
+        "bass": {
+          "newOnsets": [],
+          "holdsFromPrevious": []
+        }
+      }
+    }
+  ],
+  "tags": [
+    "corpus:bach-chorales",
+    "chorale",
+    "polyphonic",
+    "4-part"
+  ]
+}

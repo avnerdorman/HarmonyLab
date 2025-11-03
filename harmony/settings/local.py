@@ -26,9 +26,19 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "analyticpiano",
-        "USER": "postgres",
-        "PASSWORD": "password",
+        "USER": "adorman",  # Your macOS username
+        "PASSWORD": "",  # No password needed for local peer authentication
         "HOST": "localhost",
         "PORT": "5432",
     }
 }
+
+# Add permissive CSP middleware for local development
+# WARNING: This allows unsafe-eval and unsafe-inline. Remove in production!
+# Place it first so it can set headers before other middleware
+MIDDLEWARE = list(MIDDLEWARE)
+MIDDLEWARE.insert(0, "harmony.middleware.DisableCSPMiddleware")
+MIDDLEWARE = tuple(MIDDLEWARE)
+
+# Also disable some security settings for local dev
+SECURE_CONTENT_TYPE_NOSNIFF = False
