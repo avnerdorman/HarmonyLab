@@ -63,6 +63,16 @@ define(["lodash", "app/utils/analyze"], function (_, Analyze) {
       result_map = [CORRECT, PARTIAL, INCORRECT];
       score = score_map[CORRECT];
 
+      // Chorale exercises currently don't use chord-based problems.
+      // If there are no problems (chorale mode), do not return CORRECT by default.
+      // Treat as PARTIAL until the chorale matcher marks completion.
+      if ((typeof definition.isChorale === 'function' && definition.isChorale()) || (problems && problems.length === 0)) {
+        graded.score = score_map[PARTIAL];
+        graded.result = PARTIAL;
+        graded.activeIndex = 0;
+        return graded;
+      }
+
       var supported = [
         "chord_labels",
         "fixed_do",

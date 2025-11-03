@@ -21,6 +21,8 @@ define(["lodash", "vexflow"], function (_, Vex) {
       var key = item.pitch.step.toLowerCase() + acc + "/" + (item.pitch.octave + oshift);
       // VexFlow 4.x automatically renders accidentals from the key notation (e.g., "c#/4")
       var note = new Vex.Flow.StaveNote({ clef: clef, keys: [key], duration: durToVF(item.duration), dots: item.duration.dots || 0 });
+      // Default: gray until played (will be set to black by matcher later)
+      if (note.setStyle) note.setStyle({ fillStyle: '#9aa0a6', strokeStyle: '#9aa0a6' });
       return note;
     }
     if (item.kind === "chord") {
@@ -31,6 +33,8 @@ define(["lodash", "vexflow"], function (_, Vex) {
       });
       // VexFlow 4.x automatically renders accidentals from the key notation
       var chord = new Vex.Flow.StaveNote({ clef: clef, keys: keys, duration: durToVF(item.duration), dots: item.duration.dots || 0 });
+      // Default: gray until played (will be set to black by matcher later)
+      if (chord.setStyle) chord.setStyle({ fillStyle: '#9aa0a6', strokeStyle: '#9aa0a6' });
       return chord;
     }
     return null;
