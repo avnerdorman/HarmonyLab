@@ -1,6 +1,8 @@
 from django.contrib import admin
-from django.urls import reverse
+from django.urls import reverse, path
 from django.utils.safestring import mark_safe
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from import_export.admin import ImportExportModelAdmin
 
@@ -13,6 +15,8 @@ from apps.exercises.forms import (
 from apps.exercises.models import Exercise, Playlist, PerformanceData, Course
 
 import re
+import sys
+import os
 
 from apps.exercises.resources import ExerciseResource, PlaylistResource, CourseResource
 
@@ -59,6 +63,108 @@ class ExerciseAdmin(ImportExportModelAdmin):
     save_as = True
 
     resource_class = ExerciseResource
+    
+    change_list_template = "admin/exercises/exercise/change_list.html"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'import-musicxml/',
+                self.admin_site.admin_view(self.import_musicxml_view),
+                name='exercises_exercise_import_musicxml',
+            ),
+        ]
+        return custom_urls + urls
+
+    def import_musicxml_view(self, request):
+        if request.method == "POST":
+            musicxml_file = request.FILES.get('musicxml_file')
+            title = request.POST.get('title', '')
+            is_public = request.POST.get('is_public') == 'on'
+            start_measure = request.POST.get('start_measure', '')
+            end_measure = request.POST.get('end_measure', '')
+            
+            if not musicxml_file:
+                messages.error(request, "Please select a MusicXML file to upload.")
+                return render(request, 'admin/exercises/exercise/import_musicxml.html')
+            
+            # Save uploaded file temporarily
+            import tempfile
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.xml') as tmp_file:
+                for chunk in musicxml_file.chunks():
+                    tmp_file.write(chunk)
+                tmp_path = tmp_file.name
+            
+            try:
+                # Import the converter functions
+                sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'scripts'))
+                from fetch_bach_chorales import m21_to_cir, build_events
+                
+                # Load MusicXML using music21
+                from music21 import converter
+                score = converter.parse(tmp_path)
+                
+                # Apply measure range if specified
+                if start_measure and end_measure:
+                    measures = score.measures(int(start_measure), int(end_measure))
+                    score = measures
+                elif start_measure:
+                    measures = score.measures(int(start_measure), None)
+                    score = measures
+                
+                # Convert to CIR
+                cir = m21_to_cir(score)
+                events = build_events(cir)
+                
+                # Convert Event objects to dictionaries for JSON serialization
+                events_json = [
+                    {
+                        'start': event.start,
+                        'perStaff': event.perStaff
+                    }
+                    for event in events
+                ]
+                
+                # Create Exercise
+                # Create exercise with CIR format
+                # Note: type "chorale" tells frontend this is a polyphonic score-based exercise
+                exercise = Exercise.objects.create(
+                    authored_by=request.user,
+                    is_public=is_public,
+                    data={
+                        'type': 'chorale',
+                        'score': cir,
+                        'events': events_json,
+                    }
+                )
+                
+                if title:
+                    exercise.data['metadata'] = {'title': title}
+                
+                exercise.save()
+                
+                messages.success(
+                    request, 
+                    f'Successfully imported MusicXML as exercise {exercise.id}. '
+                    f'<a href="{exercise.lab_url}" target="_blank">View on site</a>'
+                )
+                
+                # Clean up temp file
+                os.unlink(tmp_path)
+                
+                return redirect('admin:exercises_exercise_change', exercise.pk)
+                
+            except Exception as e:
+                messages.error(request, f"Error importing MusicXML: {str(e)}")
+                # Clean up temp file
+                try:
+                    os.unlink(tmp_path)
+                except:
+                    pass
+                return render(request, 'admin/exercises/exercise/import_musicxml.html')
+        
+        return render(request, 'admin/exercises/exercise/import_musicxml.html')
 
     def get_import_resource_kwargs(self, request, *args, **kwargs):
         import_kwargs = super(ExerciseAdmin, self).get_import_resource_kwargs(

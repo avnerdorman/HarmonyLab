@@ -20,6 +20,7 @@ from .views import (
     CourseView,
     exercise_performance_history,
     dev_corpus_bach_json,
+    ChoraleAnalysisDebugView,
 )
 
 app_name = "lab"
@@ -100,5 +101,11 @@ urlpatterns = [
         "ajax/dev/corpus/bach/<str:filename>",
         dev_corpus_bach_json,
         name="dev-corpus-bach-json",
+    ),
+    # Debug page to print corpus analyses (roman + figured bass)
+    path(
+        "debug/analysis/",
+        ChoraleAnalysisDebugView.as_view(),
+        name="debug-analysis",
     ),
 ]

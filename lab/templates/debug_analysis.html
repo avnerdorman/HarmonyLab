@@ -1,0 +1,18 @@
+{% extends "__base.html" %}
+
+{% block content %}
+<div style="padding:16px; max-width: 1000px; margin:auto;">
+  <h2>Chorale Analysis (Roman + Figured Bass)</h2>
+  <p>This dev page loads a few Bach chorales from the corpus and prints per-onset analysis.
+     Look for suspensions (4–3, 7–6, 9–8) and cadential 6–4 figures in context.</p>
+  <div id="analysis-output" style="font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; line-height: 1.4;"></div>
+</div>
+{% endblock %}
+
+{% block js_extra %}
+<script>
+  require(["app/components/app/debug_analysis"], function (App) {
+    if (App && typeof App.ready === 'function') App.ready();
+  });
+  </script>
+{% endblock %}

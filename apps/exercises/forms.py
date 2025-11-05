@@ -224,6 +224,11 @@ def parse_visibility(visibility_pattern, instance):
     return newdata
 
 def represent_visibility(instance): # Not good. What happens for two-to-one mappings?
+    # Check if this is a new CIR format (MusicXML import) or legacy format
+    if "score" in instance.data:
+        # New CIR format - no visibility pattern support yet
+        return ""
+    
     chord_data = instance.data["chord"]
     visibility_pattern = ""
     for chord in chord_data:

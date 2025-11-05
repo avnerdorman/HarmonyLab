@@ -313,6 +313,12 @@ def m21_to_cir(s: stream.Score) -> Dict:
     bass_parts = [role_map.get('T', parts[2] if len(parts) > 2 else None), role_map.get('B', parts[3] if len(parts) > 3 else None)]
     treble_parts = [p for p in treble_parts if p is not None]
     bass_parts = [p for p in bass_parts if p is not None]
+    
+    # Special case: if we only have 2 parts and they're both on treble, distribute them
+    if len(parts) == 2 and len(treble_parts) == 2 and len(bass_parts) == 0:
+        # Move the lower voice to bass staff
+        bass_parts = [treble_parts[1]]
+        treble_parts = [treble_parts[0]]
 
     measures = []
     # Align measures by index

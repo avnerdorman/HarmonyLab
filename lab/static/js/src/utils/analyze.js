@@ -1278,11 +1278,19 @@ define(["lodash", "vexflow", "app/config"], function (_, Vex, Config) {
         }
       }
 
-      var stack = intervals
-        .sort(function (a, b) {
-          return a[0].replace(/[^0-9]+/g, "") - b[0].replace(/[^0-9]+/g, "");
-        })
-        .reverse();
+      // Sort intervals by number (ascending), but for 2/5/7, keep ascending order (2/5/7)
+      var sorted = intervals.slice().sort(function (a, b) {
+        return a[0].replace(/[^0-9]+/g, "") - b[0].replace(/[^0-9]+/g, "");
+      });
+      // If the stack is exactly 2,5,7 (or their accidentals), keep ascending order
+      var justNums = sorted.map(function(x){ return x[0].replace(/[^0-9]+/g, ""); });
+      if (justNums.length === 3 && justNums.includes("2") && justNums.includes("5") && justNums.includes("7")) {
+        // keep ascending order (2/5/7)
+        var stack = sorted;
+      } else {
+        // default: descending order (legacy)
+        var stack = sorted.reverse();
+      }
 
       return stack;
     },

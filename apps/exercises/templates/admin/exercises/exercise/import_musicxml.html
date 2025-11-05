@@ -1,0 +1,121 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .form-row {
+        margin-bottom: 15px;
+    }
+    .form-row label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .form-row input[type="text"],
+    .form-row input[type="number"],
+    .form-row input[type="file"] {
+        width: 300px;
+        padding: 5px;
+    }
+    .form-row input[type="checkbox"] {
+        margin-right: 5px;
+    }
+    .helptext {
+        display: block;
+        font-size: 12px;
+        color: #666;
+        margin-top: 3px;
+    }
+    .submit-row {
+        margin-top: 20px;
+        padding: 10px 0;
+        border-top: 1px solid #ddd;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">Home</a>
+    &rsaquo; <a href="{% url 'admin:exercises_exercise_changelist' %}">Exercises</a>
+    &rsaquo; Import MusicXML
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Import MusicXML File</h1>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="messagelist">
+            <div class="{{ message.tags }}">{{ message|safe }}</div>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div id="content-main">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <fieldset class="module aligned">
+            <h2>MusicXML File and Options</h2>
+            
+            <div class="form-row">
+                <label for="id_musicxml_file">MusicXML file:</label>
+                <input type="file" name="musicxml_file" id="id_musicxml_file" accept=".xml,.musicxml,.mxl,application/vnd.recordare.musicxml+xml,application/vnd.recordare.musicxml" required>
+                <span class="helptext">Select a MusicXML file (.xml, .musicxml, or .mxl compressed)</span>
+            </div>
+            
+            <div class="form-row">
+                <label for="id_title">Title (optional):</label>
+                <input type="text" name="title" id="id_title">
+                <span class="helptext">Optional title for the exercise (will be stored in metadata)</span>
+            </div>
+            
+            <div class="form-row">
+                <label for="id_is_public">
+                    <input type="checkbox" name="is_public" id="id_is_public">
+                    Make public
+                </label>
+                <span class="helptext">Check to make this exercise publicly accessible</span>
+            </div>
+            
+            <div class="form-row">
+                <label for="id_start_measure">Start measure (optional):</label>
+                <input type="number" name="start_measure" id="id_start_measure" min="0">
+                <span class="helptext">First measure to import (leave blank for beginning)</span>
+            </div>
+            
+            <div class="form-row">
+                <label for="id_end_measure">End measure (optional):</label>
+                <input type="number" name="end_measure" id="id_end_measure" min="0">
+                <span class="helptext">Last measure to import (leave blank for end)</span>
+            </div>
+        </fieldset>
+        
+        <div class="submit-row">
+            <input type="submit" value="Import MusicXML" class="default">
+            <a href="{% url 'admin:exercises_exercise_changelist' %}" class="button cancel-link">Cancel</a>
+        </div>
+    </form>
+    
+    <div style="margin-top: 30px; padding: 15px; background-color: #f8f8f8; border: 1px solid #ddd;">
+        <h3>How it works:</h3>
+        <ul>
+            <li>Upload a MusicXML file containing your musical score</li>
+            <li>The file will be converted to HarmonyLab's internal format (CIR) using music21</li>
+            <li>An events timeline will be generated for grading purposes</li>
+            <li>The exercise will be created with you as the author</li>
+            <li>You can optionally specify a measure range to import only part of the score</li>
+        </ul>
+        
+        <h3>Requirements:</h3>
+        <ul>
+            <li>MusicXML file must be well-formed</li>
+            <li>The converter expects standard notation (notes, rests, durations)</li>
+            <li>Multi-staff scores will be converted to a 2-staff system (treble and bass)</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

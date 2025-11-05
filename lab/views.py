@@ -540,6 +540,14 @@ def check_course_authorization(request, course_id, raise_exception=False):
     )
 
 
+class ChoraleAnalysisDebugView(RequirejsTemplateView):
+    """Simple page that boots a small app to dump roman + figured-bass analyses
+    for a few corpus chorales. Dev-only tool.
+    """
+    template_name = "debug_analysis.html"
+    requirejs_app = "app/components/app/debug_analysis"
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class AddExerciseView(View):
     http_method_names = ["post"]

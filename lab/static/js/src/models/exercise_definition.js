@@ -270,8 +270,19 @@ define(["lodash", "app/config"], function (_, Config) {
         exercise.mode = definition.mode || "play-all-voices";
         exercise.targetVoices = definition.targetVoices || "all";
         exercise.display = definition.display || {};
+        // Allow editor to choose analysis renderer for chorales
+        // Values: 'notater' (default, maximum reuse), 'adapter', 'none'
+        if (!exercise.display.hasOwnProperty('analysisRenderer')) {
+          exercise.display.analysisRenderer = 'notater';
+        }
         exercise.grading = definition.grading || {};
         exercise.excerpt = definition.excerpt || {};
+        // Use default analysis settings (from ANALYSIS_SETTINGS) for chorale overlays
+        exercise.analysis = _.cloneDeep(ANALYSIS_SETTINGS);
+        // Allow explicit overrides from the incoming definition
+        if (definition.hasOwnProperty("analysis") && definition.analysis) {
+          Object.assign(exercise.analysis, definition.analysis);
+        }
         
         // Convert CIR key format to HarmonyLab key format
         var cirKey = (definition.score && definition.score.meta && definition.score.meta.key) || definition.key || "C";
