@@ -83,7 +83,7 @@ define([
      * Defines the margin for rendering things above and below the system.
      * @type {object}
      */
-    margin: { top: 50, bottom: 25 },
+  margin: { top: 50, bottom: 10 },
     /**
      * Defines the text limit used to wrap text.
      * @type {number}
@@ -468,12 +468,12 @@ define([
         ctx.fillText(
           numeral.replace(/b/g, "♭").replace(/#/g, "♯"),
           text_x + StaveNotater.prototype.annotateOffsetX,
-          y
-        ); // replace: true flat and sharp signs
+          y - 64
+        ); // raise Roman numeral 64px
         ctx.fillText(
           "^",
           caret_x + StaveNotater.prototype.annotateOffsetX,
-          y - 15
+          y - 79
         );
       }
 
@@ -527,7 +527,7 @@ define([
         ctx.font = this.getFiguredBassFont();
         x += ctx.measureText("6").width + 6;
         const skip = this.textLineHeight * 0.8 * (MASK_TREBLE ? -1 : 1);
-        const vshift = MASK_TREBLE ? -158 : -18;
+  const vshift = MASK_TREBLE ? -222 : -82; // raise figured bass 64px higher
 
         for (var i = 0; i < lines.length; i++) {
           ctx.textAlign = "end";
