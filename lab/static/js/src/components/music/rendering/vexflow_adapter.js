@@ -184,7 +184,20 @@ define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_,
 
       // Limit to first N measures for initial view (default 4)
       var maxMeasures = opts && opts.maxMeasures !== undefined ? opts.maxMeasures : 4;
-      var numMeasures = Math.min(score.measures.length, maxMeasures);
+      var startMeasure = opts && opts.startMeasure ? parseInt(opts.startMeasure, 10) : 0;
+      if (isNaN(startMeasure) || startMeasure < 0) {
+        startMeasure = 0;
+      }
+      var totalMeasures = score.measures.length;
+      if (startMeasure >= totalMeasures) {
+        startMeasure = Math.max(0, totalMeasures - 1);
+      }
+      var remainingMeasures = Math.max(0, totalMeasures - startMeasure);
+      var numMeasures = Math.min(remainingMeasures, maxMeasures);
+      if (numMeasures <= 0) {
+        return;
+      }
+      var measuresToRender = score.measures.slice(startMeasure, startMeasure + numMeasures);
       var availableWidth = width - margin.left - margin.right;
       var trebleY = margin.top + 30;
       var bassY = trebleY + systemGap;
@@ -291,6 +304,17 @@ define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_,
         return total;
       }
       
+      // Number of noteheads prior to the first rendered measure (aligns note IDs with grader timeline)
+      var startNoteOffset = 0;
+      if (startMeasure > 0) {
+        for (var pre = 0; pre < startMeasure; pre++) {
+          var priorMeasure = score.measures[pre];
+          if (priorMeasure) {
+            startNoteOffset += countNoteheads(priorMeasure);
+          }
+        }
+      }
+      
       // Estimate key signature complexity by counting accidentals
       function getKeyAccidentalsCount(key) {
         if (!key) return 0;
@@ -329,7 +353,7 @@ define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_,
       // Calculate duration for each measure
       var measureDurations = [];
       for (var i = 0; i < numMeasures; i++) {
-        var meas = score.measures[i];
+        var meas = measuresToRender[i];
         var maxTicks = 0;
         
         // Calculate actual duration (max across voices)
@@ -361,8 +385,9 @@ define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_,
       var pickupNotesMinWidth = 0;
       if (isPickup) {
         try {
-          var voicesT = staffVoices("treble", score.measures[0].staves.treble, "treble", null, keySignatureAlterations);
-          var voicesB = staffVoices("bass", score.measures[0].staves.bass, "bass", null, keySignatureAlterations);
+          var pickupMeasure = measuresToRender[0];
+          var voicesT = staffVoices("treble", pickupMeasure.staves.treble, "treble", null, keySignatureAlterations);
+          var voicesB = staffVoices("bass", pickupMeasure.staves.bass, "bass", null, keySignatureAlterations);
           var allPickupVoices = voicesT.concat(voicesB);
           if (allPickupVoices.length) {
             var fmin = new Vex.Flow.Formatter();
@@ -379,7 +404,7 @@ define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_,
       // Helper: get minimal notes width for an arbitrary measure (used for other partials, e.g., final bar)
       function measureNotesMinWidth(mIndex) {
         try {
-          var m = score.measures[mIndex];
+          var m = measuresToRender[mIndex];
           var vT = staffVoices("treble", m.staves.treble, "treble", null, keySignatureAlterations);
           var vB = staffVoices("bass", m.staves.bass, "bass", null, keySignatureAlterations);
           var all = vT.concat(vB);
@@ -440,16 +465,17 @@ define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_,
       // Render each measure horizontally (limited to numMeasures)
       var currentX = margin.left;
       // Shared ID state across all measures and staves to match timeline IDs
-      var globalIdState = { nextId: 0, playedNoteIds: (opts && opts.playedNoteIds) || null };
+      var globalIdState = { nextId: startNoteOffset, playedNoteIds: (opts && opts.playedNoteIds) || null };
       var lastTrebleStave = null;
       var lastBassStave = null;
       for (var measIdx = 0; measIdx < numMeasures; measIdx++) {
-        var meas = score.measures[measIdx];
+        var meas = measuresToRender[measIdx];
         var treble = meas.staves.treble;
         var bass = meas.staves.bass;
 
         var measureWidth = measureWidths[measIdx];
         var isFirstMeasure = measIdx === 0;
+        var absoluteMeasureIndex = startMeasure + measIdx;
 
         var trebleStave = makeStave(ctx, currentX, trebleY, measureWidth, "treble", isFirstMeasure ? meta : {}, isFirstMeasure);
         var bassStave = makeStave(ctx, currentX, bassY, measureWidth, "bass", isFirstMeasure ? meta : {}, isFirstMeasure);
@@ -467,7 +493,7 @@ define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_,
 
         // Add barlines at the end of each measure
         // Only show final END barline if this is truly the last measure of the entire piece
-        var isLastMeasureOfPiece = (measIdx === score.measures.length - 1);
+        var isLastMeasureOfPiece = (absoluteMeasureIndex === score.measures.length - 1);
         if (measIdx < numMeasures - 1) {
           // Not the last rendered measure: always use SINGLE
           trebleStave.setEndBarType(Vex.Flow.Barline.type.SINGLE);

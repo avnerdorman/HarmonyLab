@@ -175,6 +175,9 @@ define([
     grade: function () {
       var state, graded;
       var nextUrl = this.definition.getNextExercise();
+      var isChoraleExercise =
+        typeof this.definition.isChorale === "function" &&
+        this.definition.isChorale();
 
       graded = this.grader.grade(this.definition, this.inputChords);
       // TODO: What does this do?
@@ -196,14 +199,18 @@ define([
               this.submitExerciseReport();
             }
 
-            if (this.flawless === true) {
+            var treatAsFlawless = this.flawless === true || isChoraleExercise;
+            var treatAsFinishedWithErrors =
+              this.flawless === false && !isChoraleExercise;
+
+            if (treatAsFlawless) {
               state = ExerciseContext.STATE.CORRECT;
               if (this.sealed != true) {
                 // For one-time function calls
                 this.triggerNextExercise();
               }
               this.midiTriggerNextExercise();
-            } else if (this.flawless === false) {
+            } else if (treatAsFinishedWithErrors) {
               state = ExerciseContext.STATE.FINISHED;
               if (this.sealed != true) {
                 // For one-time function calls
@@ -244,7 +251,9 @@ define([
       this.state = state;
 
       this.updateDisplayChords();
-      this.inputChords.goTo(graded.activeIndex);
+      if (!isChoraleExercise) {
+        this.inputChords.goTo(graded.activeIndex);
+      }
 
       this.trigger("graded");
     },

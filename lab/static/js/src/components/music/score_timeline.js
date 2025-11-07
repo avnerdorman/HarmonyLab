@@ -96,6 +96,16 @@ define([], function () {
         });
       });
     }
+    
+    // Sort timeline by onset (and secondarily by midi for deterministic ordering)
+    timeline.sort(function(a, b) {
+      if (a.onset !== b.onset) return a.onset - b.onset;
+      return a.midi - b.midi;
+    });
+    // Do NOT reassign IDs after sorting. Rendering assigns ids sequentially in score order,
+    // and the grader stores those ids to highlight played noteheads. Reassigning here caused
+    // mismatched highlights across voices when multiple notes shared an onset.
+    
     return timeline;
   }
 

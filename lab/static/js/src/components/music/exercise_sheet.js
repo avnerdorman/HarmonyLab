@@ -141,22 +141,19 @@ define([
       this.subscribe(EVENTS.BROADCAST.PRISTINE, this.onClickPristine);
     },
     /**
-     * Chorale mode setup: build timeline and state
+     * Chorale mode setup: ensure grader is initialized; keep display settings
      */
     initChoraleMode: function () {
-      var definition = this.exerciseContext.getDefinition();
-      var score = definition.getScore();
       var maxMeasures = 4;
-      this._chorale = {
-        timeline: ScoreTimeline.buildTimeline(score, { maxMeasures: maxMeasures }),
-        playedNoteIds: new Set(),
-        pointer: 0,
-        maxMeasures: maxMeasures,
-        mistakeMade: false,
-        heldMidi: new Set(), // currently held MIDI notes (for window advancement)
-      };
-      // Precompute the first onset window
-      this._chorale.currentOnset = this._chorale.timeline.length ? this._chorale.timeline[0].onset : null;
+      this._chorale = { maxMeasures: maxMeasures, startMeasure: 0 };
+      try {
+        var def = this.exerciseContext.getDefinition();
+        if (def.isChorale && def.isChorale() && this.exerciseContext.grader && this.exerciseContext.grader.initFromDefinition) {
+          this.exerciseContext.grader.initFromDefinition(def);
+        }
+      } catch (e) {
+        console.warn("[Chorale] initChoraleMode: failed to init grader", e);
+      }
     },
     /**
      * Renders the grand staff and everything on it.
@@ -394,13 +391,21 @@ define([
       if (definition.isChorale()) {
         var score = definition.getScore();
         if (score && score.measures && score.measures.length > 0) {
+          this._updateChoraleViewport(score);
           var canvas = this.el[0];
           var display = definition.getDisplay() || {};
+          var startMeasure =
+            (this._chorale && typeof this._chorale.startMeasure === "number"
+              ? this._chorale.startMeasure
+              : 0);
           VexFlowAdapter.render(score, this.vexRenderer, {
             width: canvas.width,
             height: canvas.height,
             maxMeasures: (this._chorale && this._chorale.maxMeasures) || 4,
-            playedNoteIds: (this._chorale && this._chorale.playedNoteIds) || null,
+            startMeasure: startMeasure,
+            playedNoteIds: (this.exerciseContext && this.exerciseContext.grader && this.exerciseContext.grader.getPlayedNoteIds)
+              ? this.exerciseContext.grader.getPlayedNoteIds()
+              : null,
             // Analysis wiring for chorale path (Notater bridge inside adapter)
             analyzeConfig: this.getAnalyzeConfig(),
             keySignature: this.keySignature,
@@ -425,6 +430,45 @@ define([
         stave.render(exercise_midi_nums, exercise_view_bool, append_barline);
       }
       return this;
+    },
+    /**
+     * Adjusts which measures are displayed for chorale exercises as the user advances.
+     */
+    _updateChoraleViewport: function (score) {
+      if (
+        !this._chorale ||
+        !score ||
+        !score.measures ||
+        !score.measures.length
+      ) {
+        return;
+      }
+      var totalMeasures = score.measures.length;
+      var maxMeasures = this._chorale.maxMeasures || 4;
+      if (totalMeasures <= maxMeasures) {
+        this._chorale.startMeasure = 0;
+        return;
+      }
+      var grader = this.exerciseContext && this.exerciseContext.grader;
+      var activeMeasure = 0;
+      if (grader && typeof grader.getActiveMeasureIndex === "function") {
+        var idx = grader.getActiveMeasureIndex();
+        if (typeof idx === "number" && !isNaN(idx)) {
+          activeMeasure = Math.max(0, Math.min(idx, totalMeasures - 1));
+        }
+      }
+      var block = Math.floor(activeMeasure / maxMeasures);
+      var desiredStart = block * maxMeasures;
+      var lastPossibleStart = Math.max(0, totalMeasures - maxMeasures);
+      if (desiredStart > lastPossibleStart) {
+        desiredStart = lastPossibleStart;
+      }
+      if (desiredStart < 0) {
+        desiredStart = 0;
+      }
+      if (this._chorale.startMeasure !== desiredStart) {
+        this._chorale.startMeasure = desiredStart;
+      }
     },
     /**
      * Resets the staves.
@@ -1009,226 +1053,33 @@ define([
       this.render();
     },
     /**
-     * Handle MIDI note events in chorale mode: mark expected notes as played and advance onset
+     * Handle MIDI note events in chorale mode by delegating to the ChoraleGrader
      */
     onMidiNote: function (state, noteNum) {
-      var DBG = true; // set to false to silence chorale debug logging
-      if (DBG) {
-        console.log("[Chorale] MIDI EVENT:", state, noteNum, {
-          heldMidi: Array.from(this._chorale.heldMidi || []),
-          playedNoteIds: Array.from(this._chorale.playedNoteIds || []),
-          pointer: this._chorale.pointer,
-        });
-      }
       var definition = this.exerciseContext.getDefinition();
-      if (!definition.isChorale()) return; // legacy exercises use standard grader
-      if (!this._chorale || !this._chorale.timeline || this._chorale.timeline.length === 0) return;
+      if (!definition.isChorale()) return;
 
-      // Handle note-off for held notes only (do not clear overlays)
-      if (state === "off") {
-        if (this._chorale.heldMidi) {
-          this._chorale.heldMidi.delete(noteNum);
-          if (DBG) {
-            console.log("[Chorale] NOTE OFF: heldMidi after delete", Array.from(this._chorale.heldMidi));
-          }
-        }
-        
-        // Check if we should advance pointer after releasing notes
-        var tl = this._chorale.timeline;
-        var played = this._chorale.playedNoteIds;
-        if (this._chorale.pointer === undefined || this._chorale.pointer === null) {
-          this._chorale.pointer = 0;
-        }
-        var ptr = this._chorale.pointer;
-        if (ptr >= tl.length) return;
-        
-        var currentOnset = tl[ptr].onset;
-        
-        // Collect ALL indices for this onset
-        var allWindowIdx = [];
-        for (var i = 0; i < tl.length; i++) {
-          if (tl[i].onset === currentOnset) {
-            allWindowIdx.push(i);
-          }
-        }
-        
-        // Check if all notes at this onset are played AND released
-        var allDone = true;
-        var allReleased = true;
-        for (var ww = 0; ww < allWindowIdx.length; ww++) {
-          var midi = tl[allWindowIdx[ww]].midi;
-          if (!played.has(tl[allWindowIdx[ww]].id)) { allDone = false; }
-          if (this._chorale.heldMidi && this._chorale.heldMidi.has(midi)) { allReleased = false; }
-        }
-        
-        if (DBG) {
-          console.log("[Chorale] NOTE OFF check:", { allDone: allDone, allReleased: allReleased, currentOnset: currentOnset });
-        }
-        
-        if (allDone && allReleased) {
-            // Probe analysis for the completed window (helps validate suspensions/figures)
-            try {
-              var analyzer = new Analyze(this.keySignature);
-              var windowMidis = allWindowIdx.map(function(idx){ return tl[idx].midi; }).sort(function(a,b){ return a-b; });
-              var fullFig = analyzer.full_thoroughbass_figure(windowMidis);
-              var no8Fig = analyzer.full_thoroughbass_figure_minus_octave(windowMidis);
-              var abbrevFig = analyzer.abbrev_thoroughbass_figure(windowMidis);
-              var roman = "";
-              if (typeof analyzer.to_chord === "function") {
-                var rn = analyzer.to_chord(windowMidis, "roman only");
-                roman = rn && rn.label ? rn.label : "";
-              }
-              if (DBG) {
-                console.log("[Chorale] Analysis (completed onset " + currentOnset + "):", {
-                  midi: windowMidis,
-                  roman: roman,
-                  figured: { full: fullFig, no8: no8Fig, abbrev: abbrevFig }
-                });
-              }
-            } catch (e) {
-              if (DBG) console.warn("[Chorale] Analysis probe error:", e);
-            }
-            // Find the first note of the next onset (not current onset)
-            var nextPtr = tl.length; // default to end
-            for (var ii = ptr + 1; ii < tl.length; ii++) {
-              if (tl[ii].onset !== currentOnset) {
-                nextPtr = ii;
-                break;
-              }
-            }
-          this._chorale.pointer = nextPtr;
-          if (DBG) {
-            console.log("[Chorale] NOTE OFF: Window complete! Advancing pointer.", { oldPointer: ptr, newPointer: nextPtr, nextOnset: nextPtr < tl.length ? tl[nextPtr].onset : 'END' });
-          }
-        }
-        
-        return;
-      }
-      // Track held notes for window advancement
+      // Start timer on first interaction
       if (state === "on") {
-        if (this._chorale.heldMidi) {
-          this._chorale.heldMidi.add(noteNum);
-          if (DBG) {
-            console.log("[Chorale] NOTE ON: heldMidi after add", Array.from(this._chorale.heldMidi));
-          }
-        }
+        this.exerciseContext.triggerTimer();
       }
 
-      // Only handle note-on below
-      if (state !== "on") return;
-
-      // If exercise is already complete, don't process more MIDI notes
-      if (this.exerciseContext.state === this.exerciseContext.STATE.CORRECT) return;
-
-      var tl = this._chorale.timeline;
-      var played = this._chorale.playedNoteIds;
-      
-      // Initialize pointer if not set
-      if (this._chorale.pointer === undefined || this._chorale.pointer === null) {
-        this._chorale.pointer = 0;
-      }
-      
-      var ptr = this._chorale.pointer;
-      if (ptr >= tl.length) return;
-
-      // Define the current "onset window" by the onset at the pointer
-      var currentOnset = tl[ptr].onset;
-      this._chorale.currentOnset = currentOnset;
-
-      if (DBG) {
-        console.log("[Chorale] NOTE ON:", noteNum, {
-          pointer: ptr,
-          currentOnset: currentOnset,
-          playedCount: played.size,
-        });
+      var grader = this.exerciseContext.grader;
+      if (!grader) return;
+      if (state === "on" && typeof grader.noteOn === "function") {
+        grader.noteOn(noteNum);
+      } else if (state === "off" && typeof grader.noteOff === "function") {
+        grader.noteOff(noteNum);
       }
 
-      // Collect ALL indices for this onset (including already-played notes) to track releases
-      var allWindowIdx = [];
-      for (var i = 0; i < tl.length; i++) {
-        if (tl[i].onset === currentOnset) {
-          allWindowIdx.push(i);
-        }
-      }
-      
-      // Collect indices for unplayed notes at this onset
-      var windowIdx = [];
-      for (var i = 0; i < tl.length; i++) {
-        if (tl[i].onset === currentOnset && !played.has(tl[i].id)) {
-          windowIdx.push(i);
-        }
-      }
+      // Run the standard grading pipeline (handles state + auto-advance)
+      this.exerciseContext.grade();
 
-      if (DBG) {
-        var windowNotes = windowIdx.map(function(idx){ return { idx: idx, id: tl[idx].id, midi: tl[idx].midi, onset: tl[idx].onset }; });
-        console.log("[Chorale] Current window", { onset: currentOnset, windowSize: windowIdx.length, windowNotes: windowNotes });
-      }
-
-      if (DBG) {
-        console.log("[Chorale] Window MIDI values:", windowIdx.map(i => tl[i].midi));
-      }
-      
-      // Try to match the incoming MIDI note to any unplayed note in the current window only
-      var matchedIndex = -1;
-      for (var w = 0; w < windowIdx.length; w++) {
-        if (tl[windowIdx[w]].midi === noteNum) { matchedIndex = windowIdx[w]; break; }
-      }
-
-      if (matchedIndex !== -1) {
-        if (DBG) {
-          console.log("[Chorale] Matched note in window", { matchedIndex: matchedIndex, event: { id: tl[matchedIndex].id, midi: tl[matchedIndex].midi, onset: tl[matchedIndex].onset }, playedNoteIds: Array.from(played) });
-        }
-        // Mark as played ONLY if in current window
-        played.add(tl[matchedIndex].id);
-
-        // If this MIDI was previously flagged as wrong, clear it now (defensive)
-        if (this._chorale.activeWrongMidi && this._chorale.activeWrongMidi.has(noteNum)) {
-          this._chorale.activeWrongMidi.delete(noteNum);
-        }
-      } else {
-        // wrong note: mark mistake
-        this._chorale.mistakeMade = true;
-        if (DBG) {
-          console.log("[Chorale] Wrong note (not in current window)", { noteNum: noteNum, onset: currentOnset });
-        }
-      }
-
-      // Check completion status (for logging only - actual advancement happens on NOTE OFF)
-      var allDone = true;
-      for (var ww = 0; ww < allWindowIdx.length; ww++) {
-        if (!played.has(tl[allWindowIdx[ww]].id)) { allDone = false; break; }
-      }
-      if (DBG) {
-        console.log("[Chorale] NOTE ON: Window status", { allDone: allDone, pointer: ptr, currentOnset: currentOnset });
-      }
-
-      // Completion check FIRST: if every timeline event within maxMeasures is played
-      var done = true;
-      for (var k = 0; k < tl.length; k++) {
-        if (!played.has(tl[k].id)) { done = false; break; }
-      }
-      if (DBG) {
-        console.log("[Chorale] Completion check", { done: done, playedCount: played.size, total: tl.length, state: this.exerciseContext.state });
-      }
-      
-      // Set state before rendering
-      if (done) {
-        // Set exercise state to CORRECT if no mistakes, else FINISHED
-        this.exerciseContext.done = true;
-        this.exerciseContext.sealed = true;
-        if (this._chorale.mistakeMade) {
-          this.exerciseContext.state = this.exerciseContext.STATE.FINISHED; // "Go again"
-        } else {
-          this.exerciseContext.state = this.exerciseContext.STATE.CORRECT; // "Passed"
-        }
-      } else {
-        // While in progress, show WAITING status (only if not already done)
-        if (this.exerciseContext.state !== this.exerciseContext.STATE.CORRECT) {
-          this.exerciseContext.state = this.exerciseContext.STATE.WAITING;
-        }
-      }
-      
-      // Now render with the correct state set
+      // Repaint with updated highlights
+      var playedIds = grader.getPlayedNoteIds ? grader.getPlayedNoteIds() : new Set();
+      var idArray = [];
+      playedIds.forEach(function(id) { idArray.push(id); });
+      console.log("[3. VISUAL] Re-rendering with " + playedIds.size + " played notes, IDs:", idArray.sort(function(a,b){return a-b;}));
       this.render();
     },
     /**

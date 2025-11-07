@@ -18,6 +18,7 @@ define([
   "app/models/exercise_chord_bank",
   "app/models/exercise_definition",
   "app/models/exercise_grader",
+  "app/models/chorale_grader",
   "app/models/exercise_context",
 ], function (
   module,
@@ -39,6 +40,7 @@ define([
   ExerciseChordBank,
   ExerciseDefinition,
   ExerciseGrader,
+  ChoraleGrader,
   ExerciseContext
 ) {
   /**
@@ -73,12 +75,19 @@ define([
     models.inputChords = new ExerciseChordBank({
       staffDistribution: definition.staffDistribution,
     });
-    models.exerciseGrader = new ExerciseGrader({
-      keySignature: new KeySignature(
-        models.exerciseDefinition.getKey(),
-        models.exerciseDefinition.getKeySignature()
-      ),
-    });
+    // Choose grader depending on exercise type
+    if (models.exerciseDefinition.isChorale && models.exerciseDefinition.isChorale()) {
+      models.exerciseGrader = new ChoraleGrader({});
+      // Initialize from definition so it has the timeline ready
+      models.exerciseGrader.initFromDefinition(models.exerciseDefinition);
+    } else {
+      models.exerciseGrader = new ExerciseGrader({
+        keySignature: new KeySignature(
+          models.exerciseDefinition.getKey(),
+          models.exerciseDefinition.getKeySignature()
+        ),
+      });
+    }
     models.exerciseContext = new ExerciseContext({
       inputChords: models.inputChords,
       grader: models.exerciseGrader,
