@@ -527,11 +527,20 @@ define([
         ctx.font = this.getFiguredBassFont();
         x += ctx.measureText("6").width + 6;
         const skip = this.textLineHeight * 0.8 * (MASK_TREBLE ? -1 : 1);
-  const vshift = MASK_TREBLE ? -222 : -82; // raise figured bass 64px higher
+        const vshift = MASK_TREBLE ? -222 : -22; // shift down another digit
 
+        var outlineColor = "rgb(238,238,221)";
         for (var i = 0; i < lines.length; i++) {
+          var lineY = i * skip + y + vshift;
           ctx.textAlign = "end";
-          ctx.fillText(lines[i], x, i * skip + y + vshift);
+          if (ctx.strokeText) {
+            ctx.save();
+            ctx.strokeStyle = outlineColor;
+            ctx.lineWidth = 4;
+            ctx.strokeText(lines[i], x, lineY);
+            ctx.restore();
+          }
+          ctx.fillText(lines[i], x, lineY);
         }
 
         return ctx.measureText(lines[0]).width;

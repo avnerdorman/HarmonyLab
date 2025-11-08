@@ -144,10 +144,9 @@ def exercise_edit_view(request, exercise_id):
                 ## ^ original authorship of exercise should not change
                 exercise.save()
 
-            if (
-                "save-and-continue" in request.POST
-                or "save-and-preview" in request.POST
-            ):
+            if "save-and-preview" in request.POST:
+                return redirect(context["preview_url"])
+            elif "save-and-continue" in request.POST:
                 success_url = reverse(
                     "dashboard:edit-exercise", kwargs={"exercise_id": exercise.id}
                 )

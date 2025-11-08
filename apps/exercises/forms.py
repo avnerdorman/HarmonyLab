@@ -6,6 +6,7 @@ from django import forms
 from prettyjson import PrettyJSONWidget
 
 from apps.exercises.models import Exercise, Playlist, PerformanceData, Course
+from django.utils.html import conditional_escape, format_html
 
 
 class ExpansiveForm(forms.ModelForm):
@@ -266,7 +267,35 @@ def represent_visibility(instance): # Not good. What happens for two-to-one mapp
     return visibility_pattern.strip()
 
 
+CHORALE_ANALYSIS_KEYS = [
+    "abbreviate_thoroughbass",
+    "note_names",
+    "fixed_do",
+    "scientific_pitch",
+    "pitch_class",
+    "spacing",
+    "scale_degrees",
+    "solfege",
+    "do_based_solfege",
+    "thoroughbass",
+    "roman_numerals",
+    "chord_labels",
+    "intervals",
+    "intervals_wrap_after_octave",
+    "intervals_wrap_after_octave_plus_ditone",
+    "generic_intervals",
+    "generic_intervals_wrap_after_octave",
+    "generic_intervals_wrap_after_octave_plus_ditone",
+    "pci",
+    "set_class_set",
+    "set_class_normal",
+    "set_class_prime",
+    "set_class_forte",
+]
+
+
 class ExerciseForm(forms.ModelForm):
+    TYPE_CHORALE = "chorale"
     TYPE_MATCHING = "matching"
     TYPE_ANALYTICAL = "analytical"
     TYPE_ANALYTICAL_PCS = "analytical_pcs"
@@ -278,6 +307,13 @@ class ExerciseForm(forms.ModelForm):
         (TYPE_ANALYTICAL_PCS, "Analysis match with wrong PCs highlighted"),
         (TYPE_FIGURED_BASS, "Figured bass"),
         (TYPE_FIGURED_BASS_PCS, "Figured bass with wrong PCs highlighted"),
+    )
+
+    CHORALE_MODE_CHOICES = (
+        ("play-all-voices", "Play all voices"),
+        ("play-outer", "Play outer voices"),
+        ("play-soprano", "Play soprano"),
+        ("play-bass", "Play bass line"),
     )
 
     DISTRIBUTION_KEYBOARD = "keyboard"
@@ -330,6 +366,88 @@ class ExerciseForm(forms.ModelForm):
         required=False,
         help_text="Visibility pattern of each chord: * for all pitches, - for none, s for soprano, b for bass.",
     )
+    chorale_mode = forms.ChoiceField(
+        choices=CHORALE_MODE_CHOICES,
+        required=False,
+        label="Chorale mode",
+        help_text="What the student is expected to perform.",
+    )
+    chorale_target_voices = forms.MultipleChoiceField(
+        required=False,
+        label="Graded voices",
+        widget=forms.CheckboxSelectMultiple,
+        help_text="Which voices the grader should require (default: all voices).",
+    )
+    chorale_visible_voices = forms.MultipleChoiceField(
+        required=False,
+        label="Visible voices",
+        widget=forms.CheckboxSelectMultiple,
+        help_text="Show or hide notation for individual voices in the score.",
+    )
+    chorale_label_mode = forms.ChoiceField(
+        choices=(
+            ("none", "Hide analysis"),
+            ("figures", "Figured bass (full)"),
+            ("figures_abbrev", "Figured bass (abbreviated)"),
+            ("romans", "Roman numerals"),
+        ),
+        required=False,
+        label="Analysis labels",
+        widget=forms.RadioSelect(),
+    )
+    chorale_show_chord_labels = forms.BooleanField(
+        required=False,
+        label="Show chord symbols",
+    )
+    chorale_transpose = forms.IntegerField(
+        required=False,
+        label="Transpose (semitones)",
+        help_text="Positive for up, negative for down. 0 keeps the original key.",
+    )
+    chorale_tempo = forms.IntegerField(
+        required=False,
+        label="Practice tempo (BPM)",
+        min_value=20,
+        help_text="Suggested tempo for the exercise viewport.",
+    )
+    chorale_wait_mode = forms.BooleanField(
+        required=False,
+        label="Wait for correct notes",
+        help_text="If enabled, the viewport only advances when the player satisfies the current onset.",
+    )
+    chorale_onset_window_ms = forms.IntegerField(
+        required=False,
+        label="Onset tolerance (ms)",
+        min_value=10,
+        help_text="How wide of a timing window to accept for attacks.",
+    )
+    chorale_release_tolerance_pct = forms.IntegerField(
+        required=False,
+        label="Release tolerance (%)",
+        min_value=0,
+        max_value=100,
+        help_text="How much of the notated duration must be held before releasing.",
+    )
+    chorale_octave_flexible = forms.BooleanField(
+        required=False,
+        label="Allow octave displacement",
+    )
+    chorale_chord_member_min = forms.IntegerField(
+        required=False,
+        label="Minimum chord members",
+        min_value=1,
+        help_text="Require at least this many correct notes per onset (defaults to all).",
+    )
+    chorale_excerpt_start = forms.IntegerField(
+        required=False,
+        label="Excerpt start measure",
+        min_value=0,
+    )
+    chorale_excerpt_end = forms.IntegerField(
+        required=False,
+        label="Excerpt end measure",
+        min_value=0,
+    )
 
     field_order = [
         "id",
@@ -342,10 +460,27 @@ class ExerciseForm(forms.ModelForm):
         "intro_text",
         "type",
         "staff_distribution",
+        "chorale_mode",
+        "chorale_target_voices",
+        "chorale_visible_voices",
+        "chorale_label_mode",
+        "chorale_show_chord_labels",
+        "chorale_transpose",
+        "chorale_tempo",
+        "chorale_wait_mode",
+        "chorale_onset_window_ms",
+        "chorale_release_tolerance_pct",
+        "chorale_octave_flexible",
+        "chorale_chord_member_min",
+        "chorale_excerpt_start",
+        "chorale_excerpt_end",
     ]
 
     def __init__(self, *arg, **kwargs):
         super(ExerciseForm, self).__init__(*arg, **kwargs)
+        self._is_chorale = self._detect_chorale()
+        self._chorale_voice_choices = []
+        self._configure_type_field()
         if self.instance and self.instance.pk:
             self.fields["intro_text"].initial = self.instance.data.get(
                 "introText", None
@@ -366,6 +501,7 @@ class ExerciseForm(forms.ModelForm):
             self.fields["visibility_pattern"].initial = represent_visibility(
                 self.instance
             )
+        self._configure_chorale_fields()
 
     def save(self, commit=True):
         instance = super(ExerciseForm, self).save(commit)
@@ -380,14 +516,20 @@ class ExerciseForm(forms.ModelForm):
             else:
                 instance.data["timeSignature"] = ""
             instance.data["semibrevesPerLine"] = self.cleaned_data["semibreves_per_line"]
-            instance.data = parse_visibility(
-                self.cleaned_data.get("visibility_pattern"), instance
-            )
+            if not self._is_chorale and "chord" in instance.data:
+                instance.data = parse_visibility(
+                    self.cleaned_data.get("visibility_pattern"), instance
+                )
             instance.authored_by = self.context.get("user")
             instance.clean()
+            if self._is_chorale:
+                self._store_chorale_settings(instance)
             instance.save()
 
         return instance
+
+    class Media:
+        css = {"all": ("css/admin_chorale.css",)}
 
     class Meta:
         model = Exercise
@@ -395,6 +537,317 @@ class ExerciseForm(forms.ModelForm):
         widgets = {
             "data": PrettyJSONWidget(attrs={"initial": "parsed"}),
         }
+
+    # --------------------
+    # Chorale helpers
+    # --------------------
+
+    CHORALE_ONLY_FIELDS = [
+        "chorale_mode",
+        "chorale_target_voices",
+        "chorale_visible_voices",
+        "chorale_label_mode",
+        "chorale_show_chord_labels",
+        "chorale_transpose",
+        "chorale_tempo",
+        "chorale_wait_mode",
+        "chorale_onset_window_ms",
+        "chorale_release_tolerance_pct",
+        "chorale_octave_flexible",
+        "chorale_chord_member_min",
+        "chorale_excerpt_start",
+        "chorale_excerpt_end",
+    ]
+
+    CHORALE_SUPPRESSED_FIELDS = [
+        "rhythm",
+        "visibility_pattern",
+        "time_signature",
+        "semibreves_per_line",
+    ]
+
+    def _detect_chorale(self):
+        data = {}
+        if self.instance and getattr(self.instance, "data", None):
+            data = self.instance.data
+        initial_type = None
+        if hasattr(self, "initial"):
+            initial_type = self.initial.get("type")
+        form_type = data.get("type") or initial_type
+        bound_data = getattr(self, "data", None)
+        if not form_type and bound_data and "type" in bound_data:
+            form_type = bound_data.get("type")
+        return form_type == self.TYPE_CHORALE
+
+    def _configure_type_field(self):
+        if "type" not in self.fields:
+            return
+        if self._is_chorale:
+            choices = list(self.fields["type"].choices)
+            if (
+                self.TYPE_CHORALE,
+                "Chorale score",
+            ) not in choices:
+                choices.append((self.TYPE_CHORALE, "Chorale score"))
+            self.fields["type"].choices = choices
+            self.fields["type"].initial = self.TYPE_CHORALE
+            self.fields["type"].widget = forms.HiddenInput()
+        else:
+            filtered = [c for c in self.fields["type"].choices if c[0] != self.TYPE_CHORALE]
+            self.fields["type"].choices = tuple(filtered)
+
+    def _configure_chorale_fields(self):
+        if not self._is_chorale:
+            for field in self.CHORALE_ONLY_FIELDS:
+                if field in self.fields:
+                    self.fields[field].widget = forms.HiddenInput()
+            return
+
+        # Hide legacy-only inputs
+        for field in self.CHORALE_SUPPRESSED_FIELDS:
+            if field in self.fields:
+                self.fields[field].widget = forms.HiddenInput()
+
+        # Staff distribution is forced to chorale
+        if "staff_distribution" in self.fields:
+            self.fields["staff_distribution"].initial = self.DISTRIBUTION_CHORALE
+            self.fields["staff_distribution"].widget = forms.HiddenInput()
+
+        score = {}
+        if self.instance and getattr(self.instance, "data", None):
+            score = self.instance.data.get("score", {})
+        self._chorale_voice_choices = self._build_voice_choices(score)
+        self._init_chorale_initials(score)
+
+    def _build_voice_choices(self, score):
+        measures = (score or {}).get("measures", [])
+        if not measures:
+            return []
+        staff_map = measures[0].get("staves", {})
+        choices = []
+        friendly_names = {
+            ("treble", 0): "Soprano",
+            ("treble", 1): "Alto",
+            ("bass", 0): "Tenor",
+            ("bass", 1): "Bass",
+        }
+        for staff_key, staff in staff_map.items():
+            voices = staff.get("voices", []) if isinstance(staff, dict) else []
+            for idx, _voice in enumerate(voices):
+                token = f"{staff_key}:{idx}"
+                label = friendly_names.get((staff_key, idx))
+                if not label:
+                    label = f"{staff_key.title()} voice {idx + 1}"
+                choices.append((token, label))
+        if "chorale_target_voices" in self.fields:
+            self.fields["chorale_target_voices"].choices = choices
+        if "chorale_visible_voices" in self.fields:
+            self.fields["chorale_visible_voices"].choices = choices
+        return choices
+
+    def _init_chorale_initials(self, score):
+        data = self.instance.data if self.instance and getattr(self.instance, "data", None) else {}
+        display = data.get("display", {}) or {}
+        grading = data.get("grading", {}) or {}
+        excerpt = data.get("excerpt", {}) or {}
+
+        analysis_mode = (data.get("analysis", {}) or {}).get("mode", {}) or {}
+        label_mode = display.get("figureStyle") or "none"
+        if label_mode.startswith("figures") and not display.get("showFigures"):
+            label_mode = "none"
+        if label_mode == "none":
+            if display.get("showRomans"):
+                label_mode = "romans"
+            elif display.get("showFigures"):
+                label_mode = (
+                    "figures_abbrev"
+                    if analysis_mode.get("abbreviate_thoroughbass")
+                    else "figures"
+                )
+
+        defaults = {
+            "chorale_mode": data.get("mode") or "play-all-voices",
+            "chorale_label_mode": label_mode,
+            "chorale_show_chord_labels": display.get("showChordLabels", False),
+            "chorale_transpose": display.get("transpose", 0),
+            "chorale_tempo": display.get("tempo", 60),
+            "chorale_wait_mode": display.get("waitMode", False),
+            "chorale_onset_window_ms": grading.get("onsetWindowMs", 150),
+            "chorale_release_tolerance_pct": grading.get("releaseTolerancePct", 40),
+            "chorale_octave_flexible": grading.get("octaveFlexible", False),
+            "chorale_chord_member_min": grading.get("chordMemberMin", None),
+            "chorale_excerpt_start": excerpt.get("startMeasure"),
+            "chorale_excerpt_end": excerpt.get("endMeasure"),
+        }
+        for field, value in defaults.items():
+            if field in self.fields:
+                self.fields[field].initial = value
+
+        target_tokens = self._voice_tokens_from_mapping(data.get("targetVoices"))
+        visible_tokens = self._voice_tokens_from_mapping(display.get("visibleVoices"))
+
+        if "chorale_target_voices" in self.fields:
+            if not target_tokens and self._chorale_voice_choices:
+                target_tokens = [choice[0] for choice in self._chorale_voice_choices]
+            self.fields["chorale_target_voices"].initial = target_tokens
+        if "chorale_visible_voices" in self.fields:
+            if not visible_tokens and self._chorale_voice_choices:
+                visible_tokens = [choice[0] for choice in self._chorale_voice_choices]
+            self.fields["chorale_visible_voices"].initial = visible_tokens
+
+        help_map = {
+            "chorale_mode": "Choose the assignment style (all voices, melody only, etc.).",
+            "chorale_target_voices": "Only these voices must be performed correctly to pass.",
+            "chorale_visible_voices": "Toggles which staves/voices are drawn on the score.",
+            "chorale_label_mode": "Select exactly one overlay: figured bass, Roman numerals, or hide labels.",
+            "chorale_show_chord_labels": "Adds lead-sheet chord symbols (F, C/E, etc.) alongside the selected overlay.",
+            "chorale_transpose": "Shift the printed score and required pitches by the given semitones.",
+            "chorale_tempo": "Viewport tempo in BPM (purely informational for now).",
+            "chorale_wait_mode": "When enabled, the viewport waits at the current onset until notes are correct.",
+            "chorale_onset_window_ms": "How many milliseconds early/late a played note can be and still count as on time.",
+            "chorale_release_tolerance_pct": "What fraction of the notated duration the student must hold before releasing.",
+            "chorale_octave_flexible": "Allow correct notes in any octave (useful for limited keyboards).",
+            "chorale_chord_member_min": "Require at least this many chord members at each onset (use 0/blank to require all).",
+            "chorale_excerpt_start": "Optional starting measure index for the viewport.",
+            "chorale_excerpt_end": "Optional ending measure index (exclusive).",
+        }
+        for field, text in help_map.items():
+            self._set_help_icon(field, text)
+
+    def _voice_tokens_from_mapping(self, mapping):
+        if not mapping or mapping == "all":
+            return []
+        tokens = []
+        if isinstance(mapping, dict):
+            for staff, voices in mapping.items():
+                for idx in voices:
+                    tokens.append(f"{staff}:{idx}")
+        elif isinstance(mapping, list):
+            # already encoded tokens
+            tokens = [str(token) for token in mapping]
+        return tokens
+
+    def _store_chorale_settings(self, instance):
+        data = instance.data
+        display = data.get("display", {}) or {}
+        grading = data.get("grading", {}) or {}
+
+        data["type"] = self.TYPE_CHORALE
+        data["staffDistribution"] = self.DISTRIBUTION_CHORALE
+        data["mode"] = (
+            self.cleaned_data.get("chorale_mode") or data.get("mode") or "play-all-voices"
+        )
+
+        target_tokens = self.cleaned_data.get("chorale_target_voices") or []
+        data["targetVoices"] = self._serialize_voice_selection(
+            target_tokens, allow_all=True
+        )
+
+        visible_tokens = self.cleaned_data.get("chorale_visible_voices") or []
+        serialized_visible = self._serialize_voice_selection(
+            visible_tokens, allow_all=True
+        )
+        if serialized_visible == "all":
+            display.pop("visibleVoices", None)
+        else:
+            display["visibleVoices"] = serialized_visible
+
+        raw_label_mode = self.cleaned_data.get("chorale_label_mode") or "none"
+        label_mode = raw_label_mode
+        display["figureStyle"] = (
+            raw_label_mode if raw_label_mode.startswith("figures") else None
+        )
+        if display["figureStyle"] is None and "figureStyle" in display:
+            display.pop("figureStyle", None)
+        display["showFigures"] = raw_label_mode in ("figures", "figures_abbrev")
+        display["showRomans"] = label_mode == "romans"
+        display["showChordLabels"] = self.cleaned_data.get(
+            "chorale_show_chord_labels", False
+        )
+        transpose = self.cleaned_data.get("chorale_transpose")
+        display["transpose"] = transpose if transpose is not None else display.get("transpose", 0)
+        tempo = self.cleaned_data.get("chorale_tempo")
+        display["tempo"] = tempo if tempo is not None else display.get("tempo", 60)
+        display["waitMode"] = self.cleaned_data.get("chorale_wait_mode", False)
+        display["analysisRenderer"] = (
+            "notater"
+            if display["showFigures"]
+            or display["showRomans"]
+            or display["showChordLabels"]
+            else "none"
+        )
+
+        onset_window = self.cleaned_data.get("chorale_onset_window_ms")
+        if onset_window is not None:
+            grading["onsetWindowMs"] = onset_window
+        release_tol = self.cleaned_data.get("chorale_release_tolerance_pct")
+        if release_tol is not None:
+            grading["releaseTolerancePct"] = release_tol
+        grading["octaveFlexible"] = self.cleaned_data.get("chorale_octave_flexible", False)
+        chord_min = self.cleaned_data.get("chorale_chord_member_min")
+        if chord_min:
+            grading["chordMemberMin"] = chord_min
+        elif "chordMemberMin" in grading:
+            grading.pop("chordMemberMin")
+
+        data["display"] = display
+        data["grading"] = grading
+
+        start_measure = self.cleaned_data.get("chorale_excerpt_start")
+        end_measure = self.cleaned_data.get("chorale_excerpt_end")
+        if start_measure is not None or end_measure is not None:
+            data["excerpt"] = data.get("excerpt", {}) or {}
+            if start_measure is not None:
+                data["excerpt"]["startMeasure"] = start_measure
+            if end_measure is not None:
+                data["excerpt"]["endMeasure"] = end_measure
+
+        self._apply_chorale_analysis_settings(
+            data,
+            raw_label_mode,
+            display["showChordLabels"],
+        )
+
+    def _apply_chorale_analysis_settings(self, data, label_mode, show_chords):
+        analysis = data.get("analysis", {}) or {}
+        mode = {key: False for key in CHORALE_ANALYSIS_KEYS}
+        mode["thoroughbass"] = label_mode in ("figures", "figures_abbrev")
+        mode["abbreviate_thoroughbass"] = label_mode == "figures_abbrev"
+        mode["roman_numerals"] = label_mode == "romans"
+        mode["chord_labels"] = bool(show_chords)
+
+        analysis["mode"] = mode
+        analysis["enabled"] = any(mode.values())
+        data["analysis"] = analysis
+
+    def _serialize_voice_selection(self, tokens, allow_all=False):
+        if not tokens:
+            return "all" if allow_all else {}
+        if allow_all and self._chorale_voice_choices:
+            all_tokens = {choice[0] for choice in self._chorale_voice_choices}
+            if set(tokens) == all_tokens:
+                return "all"
+        mapping = {}
+        for token in tokens:
+            if ":" not in token:
+                continue
+            staff, idx = token.split(":", 1)
+            try:
+                idx = int(idx)
+            except (TypeError, ValueError):
+                continue
+            mapping.setdefault(staff, []).append(idx)
+        return mapping or ("all" if allow_all else {})
+
+    def _set_help_icon(self, field_name, description):
+        if not self._is_chorale or field_name not in self.fields or not description:
+            return
+        text = conditional_escape(description)
+        self.fields[field_name].help_text = format_html(
+            '<span class="hl-help-icon" tabindex="0" role="img" aria-label="{0}" '
+            'data-tooltip="{0}"></span>',
+            text,
+        )
 
 
 class PlaylistForm(forms.ModelForm):

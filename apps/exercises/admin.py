@@ -178,6 +178,22 @@ class ExerciseAdmin(ImportExportModelAdmin):
         form.context = {"user": request.user}
         return form
 
+    def get_fieldsets(self, request, obj=None):
+        base_fieldsets = list(super().get_fieldsets(request, obj))
+        chorale = False
+        if obj and isinstance(getattr(obj, "data", None), dict):
+            chorale = obj.data.get("type") == ExerciseForm.TYPE_CHORALE
+        elif request.method == "POST":
+            chorale = request.POST.get("type") == ExerciseForm.TYPE_CHORALE
+        if chorale:
+            base_fieldsets.append(
+                (
+                    "Chorale settings",
+                    {"fields": tuple(ExerciseForm.CHORALE_ONLY_FIELDS)},
+                )
+            )
+        return base_fieldsets
+
     def show_on_site(self, obj):
         if not obj.pk:
             return ""

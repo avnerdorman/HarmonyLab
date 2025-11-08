@@ -398,6 +398,7 @@ define([
             (this._chorale && typeof this._chorale.startMeasure === "number"
               ? this._chorale.startMeasure
               : 0);
+          var staffYOffset = display.showFigures ? -20 : 0;
           VexFlowAdapter.render(score, this.vexRenderer, {
             width: canvas.width,
             height: canvas.height,
@@ -409,7 +410,8 @@ define([
             // Analysis wiring for chorale path (Notater bridge inside adapter)
             analyzeConfig: this.getAnalyzeConfig(),
             keySignature: this.keySignature,
-            analysisRenderer: display.analysisRenderer || "notater" // notater|adapter|none
+            analysisRenderer: display.analysisRenderer || "notater", // notater|adapter|none
+            staffYOffset: staffYOffset
           });
         }
         return this;

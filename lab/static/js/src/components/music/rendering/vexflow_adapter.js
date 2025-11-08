@@ -169,11 +169,12 @@ define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_,
       var margin = { left: 20, right: 20, top: 20, bottom: 20 };
       var width = (opts && opts.width) || (canvas && canvas.width) || 800;
       var height = (opts && opts.height) || (canvas && canvas.height) || 300;
-  var systemGap = 120; // Increased vertical spacing between staves
-  var meta = score.meta || {};
-  var analyzeConfig = (opts && opts.analyzeConfig) || { enabled: false, mode: {} };
-  var keySignatureModel = opts && opts.keySignature; // KeySignature instance expected
-  var analysisRenderer = (opts && opts.analysisRenderer) || "notater"; // notater|adapter|none
+      var meta = score.meta || {};
+      var analyzeConfig = (opts && opts.analyzeConfig) || { enabled: false, mode: {} };
+      var keySignatureModel = opts && opts.keySignature; // KeySignature instance expected
+      var analysisRenderer = (opts && opts.analysisRenderer) || "notater"; // notater|adapter|none
+      var systemGap = (opts && opts.systemGap) || 120; // Increased vertical spacing between staves
+      var staffYOffset = (opts && opts.staffYOffset) || 0;
       
       // Calculate key signature alterations once for the entire score
       var keySignatureAlterations = getKeySignatureAlterations(meta.key);
@@ -199,7 +200,7 @@ define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_,
       }
       var measuresToRender = score.measures.slice(startMeasure, startMeasure + numMeasures);
       var availableWidth = width - margin.left - margin.right;
-      var trebleY = margin.top + 30;
+      var trebleY = margin.top + 30 + staffYOffset;
       var bassY = trebleY + systemGap;
 
       // Time from metadata if present; default 4/4
