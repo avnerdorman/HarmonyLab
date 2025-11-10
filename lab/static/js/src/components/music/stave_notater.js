@@ -479,6 +479,51 @@ define([
 
       return numeral; /* for grading */
     },
+    drawBassFigureDegree: function (x, y) {
+      var notes = this.chord.getNoteNumbers();
+      if (!notes || !notes.length) return "";
+      var bassNote = Math.min.apply(null, notes);
+      if (!Number.isFinite(bassNote)) return "";
+      var roman = this.getAnalyzer().to_chord(notes, "roman only");
+      var baseNumeral = roman && roman.numeral ? roman.numeral : null;
+      var circled = null;
+      if (baseNumeral) {
+        var numeralLower = baseNumeral.toLowerCase();
+        var romanMap = { i: "①", ii: "②", iii: "③", iv: "④", v: "⑤", vi: "⑥", vii: "⑦" };
+        circled = romanMap[numeralLower] || null;
+      }
+      if (!circled) {
+        var solfege = this.getAnalyzer().to_solfege([bassNote]);
+        if (!solfege) return "";
+        solfege = solfege.split("<br>")[0];
+        var baseMatch = solfege.match(/[A-Za-z]+/);
+        if (!baseMatch) return "";
+        var base = baseMatch[0].toLowerCase();
+        var map = {
+          do: "①",
+          re: "②",
+          mi: "③",
+          fa: "④",
+          sol: "⑤",
+          so: "⑤",
+          la: "⑥",
+          ti: "⑦",
+          si: "⑦",
+        };
+        circled = map[base] || null;
+      }
+      if (!circled) return "";
+      var ctx = this.getContext();
+      var fontArgs = ctx.font.split(" ");
+      var newSize = "18px";
+      ctx.font = newSize + " " + fontArgs[fontArgs.length - 1];
+      ctx.fillText(
+        circled,
+        x + StaveNotater.prototype.annotateOffsetX,
+        y + 28
+      );
+      return circled;
+    },
     /**
      * Draws the thoroughbass figures.
      *
@@ -1320,8 +1365,19 @@ define([
           this.getAnalyzer().to_chord(midi_nums).label || "";
       }
 
-      if (num_notes >= 2 && mode.thoroughbass) {
-        this.drawThoroughbass(x, y);
+      if (mode.thoroughbass) {
+        if (num_notes >= 2) {
+          this.drawThoroughbass(x, y);
+        }
+        if (mode.abbreviate_thoroughbass) {
+          this.drawBassFigureDegree(x, y);
+        }
+        // when thoroughbass is active we skip the other label types
+        if (mode.chord_labels || mode.roman_numerals || mode.bass_scale_degrees || mode.bass_solfege || mode.bass_do_based_solfege) {
+          // fall through so roman numerals/chords can still draw if desired
+        } else {
+          return;
+        }
       } else if (num_notes == 2) {
         if (mode.intervals) {
           this.drawInterval(x, y, 'name');
