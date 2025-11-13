@@ -19,23 +19,34 @@ define([
 
   function drawInlineRoman(ctx, label, columnX, stave, opts) {
     if (!ctx || !label) return;
+    var text = String(label);
+    var lines = text.split(/\n+/).filter(function (line) {
+      return line.length > 0;
+    });
+    if (!lines.length) {
+      return;
+    }
     var yBase = (stave && stave.getBottomY) ? stave.getBottomY() : 0;
     var y = yBase + ((opts && opts.yShift) || 30);
     ctx.save();
     ctx.font = "18px JazzSerifs";
     ctx.fillStyle = "#000";
-
-    var glyphs = Array.from(label);
-    var midIndex = glyphs.length ? Math.floor((glyphs.length - 1) / 2) : 0;
-    var leftText =
-      midIndex > 0 ? glyphs.slice(0, midIndex).join("") : "";
-    var centerGlyph = glyphs[midIndex] || "";
-    var leftWidth = leftText ? ctx.measureText(leftText).width : 0;
-    var centerWidth = centerGlyph ? ctx.measureText(centerGlyph).width : 0;
-    var startX = Math.round(columnX - leftWidth - centerWidth / 2);
-
     ctx.textAlign = "left";
-    ctx.fillText(label, startX, y);
+    var lineHeight = (opts && opts.lineHeight) || 16;
+
+    lines.forEach(function (line, lineIdx) {
+      var glyphs = Array.from(line);
+      var midIndex = glyphs.length ? Math.floor((glyphs.length - 1) / 2) : 0;
+      var leftText =
+        midIndex > 0 ? glyphs.slice(0, midIndex).join("") : "";
+      var centerGlyph = glyphs[midIndex] || "";
+      var leftWidth = leftText ? ctx.measureText(leftText).width : 0;
+      var centerWidth = centerGlyph ? ctx.measureText(centerGlyph).width : 0;
+      var startX = Math.round(columnX - leftWidth - centerWidth / 2);
+      var lineY = y + lineIdx * lineHeight;
+      ctx.fillText(line, startX, lineY);
+    });
+
     ctx.restore();
   }
 
@@ -166,18 +177,70 @@ define([
     return alterations;
   }
 
-  function attachInlineRomanAnnotation(col, midi, analyzeConfig, analyzer, ctx, fallbackStave, opts) {
-    if (
-      !analyzeConfig ||
-      !analyzeConfig.mode ||
-      !analyzeConfig.mode.roman_numerals ||
-      !analyzer ||
-      !ctx ||
-      !col
-    ) {
+  function computeFiguredLabel(midi, analyzer, abbreviate) {
+    if (!analyzer || !midi || midi.length < 2) return null;
+    try {
+      var figure = abbreviate
+        ? analyzer.abbrev_thoroughbass_figure(midi)
+        : analyzer.full_thoroughbass_figure(midi);
+      if (!figure) return null;
+      var lines = figure
+        .split("/")
+        .map(function (line) {
+          return line
+            .replace(/bb/g, "𝄫")
+            .replace(/b/g, "♭")
+            .replace(/##/g, "𝄪")
+            .replace(/#/g, "♯")
+            .replace(/n/g, "♮")
+            .trim();
+        })
+        .filter(function (line) {
+          return line.length > 0;
+        });
+      if (!lines.length) return null;
+      return lines.join("\n");
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function shouldRenderRoman(analyzeConfig) {
+    return (
+      analyzeConfig &&
+      analyzeConfig.mode &&
+      analyzeConfig.mode.roman_numerals &&
+      !analyzeConfig.mode.thoroughbass &&
+      !analyzeConfig.mode.abbreviate_thoroughbass
+    );
+  }
+
+  function shouldRenderFigured(analyzeConfig) {
+    return (
+      analyzeConfig &&
+      analyzeConfig.mode &&
+      (analyzeConfig.mode.thoroughbass ||
+        analyzeConfig.mode.abbreviate_thoroughbass)
+    );
+  }
+
+  function attachInlineRomanAnnotation(
+    col,
+    midi,
+    analyzeConfig,
+    analyzer,
+    ctx,
+    fallbackStave,
+    opts,
+    labelOverride
+  ) {
+    if (!analyzer || !ctx || !col) {
       return;
     }
-    var label = computeRomanLabel(midi, analyzer);
+    var label =
+      typeof labelOverride === "string"
+        ? labelOverride
+        : computeRomanLabel(midi, analyzer);
     if (!label) {
       return;
     }
@@ -413,6 +476,12 @@ define([
         } catch (err) {
           inlineAnalyzer = null;
         }
+      }
+      var renderRomans = shouldRenderRoman(analyzeConfig);
+      var renderFigured = !renderRomans && shouldRenderFigured(analyzeConfig);
+      if (!inlineAnalyzer) {
+        renderRomans = false;
+        renderFigured = false;
       }
       var systemGap = (opts && opts.systemGap) || 120; // Increased vertical spacing between staves
       var staffYOffset = (opts && opts.staffYOffset) || 0;
@@ -896,15 +965,37 @@ define([
                 }
               }
 
-              attachInlineRomanAnnotation(
-                col,
-                midi,
-                analyzeConfig,
-                inlineAnalyzer,
-                ctx,
-                bassStave,
-                { yShift: 32 }
-              );
+              if (renderRomans) {
+                attachInlineRomanAnnotation(
+                  col,
+                  midi,
+                  analyzeConfig,
+                  inlineAnalyzer,
+                  ctx,
+                  bassStave,
+                  { yShift: 32 }
+                );
+              } else if (renderFigured) {
+                var figureLabel = computeFiguredLabel(
+                  midi,
+                  inlineAnalyzer,
+                  !!(analyzeConfig &&
+                    analyzeConfig.mode &&
+                    analyzeConfig.mode.abbreviate_thoroughbass)
+                );
+                if (figureLabel) {
+                  attachInlineRomanAnnotation(
+                    col,
+                    midi,
+                    analyzeConfig,
+                    inlineAnalyzer,
+                    ctx,
+                    bassStave,
+                    { yShift: 18, lineHeight: 12 },
+                    figureLabel
+                  );
+                }
+              }
 
             });
           }
