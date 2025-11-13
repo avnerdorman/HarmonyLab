@@ -126,7 +126,7 @@ define({
   // V
 
   "7/2z": { root: "7", label: "V", priority: "1" },
-  "7/z": { root: "7", label: "V{u3}", priority: "11" },
+  "7/z": { root: "7", label: "V", priority: "11" },
   "z/27": { root: "7", label: "V{z}", priority: "4" },
   "2/7z": { root: "7", label: "V{z4}", priority: "70" },
 
