@@ -485,6 +485,10 @@ define([
       }
       var systemGap = (opts && opts.systemGap) || 120; // Increased vertical spacing between staves
       var staffYOffset = (opts && opts.staffYOffset) || 0;
+      var baseRomanYOffset = 32;
+      var baseFiguredYOffset = 18;
+      var romanYOffset = baseRomanYOffset - staffYOffset;
+      var figuredYOffset = baseFiguredYOffset - staffYOffset;
       
       // Calculate key signature alterations once for the entire score
       var keySignatureAlterations = getKeySignatureAlterations(meta.key);
@@ -973,7 +977,7 @@ define([
                   inlineAnalyzer,
                   ctx,
                   bassStave,
-                  { yShift: 32 }
+                  { yShift: romanYOffset }
                 );
               } else if (renderFigured) {
                 var figureLabel = computeFiguredLabel(
@@ -991,7 +995,7 @@ define([
                     inlineAnalyzer,
                     ctx,
                     bassStave,
-                    { yShift: 18, lineHeight: 12 },
+                    { yShift: figuredYOffset, lineHeight: 12 },
                     figureLabel
                   );
                 }

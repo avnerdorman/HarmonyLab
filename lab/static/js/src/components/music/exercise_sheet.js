@@ -428,7 +428,7 @@ define([
             (this._chorale && typeof this._chorale.startMeasure === "number"
               ? this._chorale.startMeasure
               : 0);
-          var staffYOffset = 0;
+          var staffYOffset = 20;
           VexFlowAdapter.render(score, this.vexRenderer, {
             width: canvas.width,
             height: canvas.height,
