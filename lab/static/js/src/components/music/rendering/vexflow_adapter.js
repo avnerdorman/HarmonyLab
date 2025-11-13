@@ -3,9 +3,9 @@
 define([
   "lodash",
   "vexflow",
-  "app/components/music/stave_notater",
   "app/components/music/score_timeline",
-], function (_, Vex, StaveNotater, ScoreTimeline) {
+  "app/utils/analyze",
+], function (_, Vex, ScoreTimeline, Analyze) {
   "use strict";
 
   function durToVF(d) {
@@ -16,6 +16,32 @@ define([
   // Returns the alteration (in semitones) that the key signature applies to each step (C, D, E, F, G, A, B)
   // For example, F major (1 flat: Bb) returns { B: -1 }
   // For example, G major (1 sharp: F#) returns { F: 1 }
+
+  function drawInlineRoman(ctx, label, columnX, stave, opts) {
+    if (!ctx || !label) return;
+    var yBase = (stave && stave.getBottomY) ? stave.getBottomY() : 0;
+    var y = yBase + ((opts && opts.yShift) || 30);
+    ctx.save();
+    ctx.font = "18px JazzSerifs";
+    ctx.fillStyle = "#000";
+    ctx.textAlign = "center";
+    ctx.fillText(label, Math.round(columnX), y);
+    ctx.restore();
+  }
+
+  function computeRomanLabel(midi, analyzer) {
+    if (!analyzer || !midi || !midi.length) return null;
+    try {
+      var chordInfo = analyzer.to_chord(midi, "roman only");
+      if (chordInfo && chordInfo.label) {
+        return chordInfo.label;
+      }
+    } catch (err) {
+      return null;
+    }
+    return null;
+  }
+
   function getKeySignatureAlterations(key) {
     if (!key) return {};
     
@@ -49,6 +75,50 @@ define([
     }
     
     return alterations;
+  }
+
+  function attachInlineRomanAnnotation(col, midi, analyzeConfig, analyzer, ctx, fallbackStave, opts) {
+    if (
+      !analyzeConfig ||
+      !analyzeConfig.mode ||
+      !analyzeConfig.mode.roman_numerals ||
+      !analyzer ||
+      !ctx ||
+      !col
+    ) {
+      return;
+    }
+    var label = computeRomanLabel(midi, analyzer);
+    if (!label) {
+      return;
+    }
+    var x =
+      col && typeof col.x === "number"
+        ? col.x
+        : null;
+    if (x === null && col && col.notes && col.notes.length) {
+      var candidate = col.notes[0];
+      if (candidate && typeof candidate.getAbsoluteX === "function") {
+        x = candidate.getAbsoluteX();
+      }
+    }
+    if (x === null) {
+      return;
+    }
+    var targetStave = fallbackStave || null;
+    if (col && col.notes && col.notes.length) {
+      for (var i = 0; i < col.notes.length; i++) {
+        var stave = col.notes[i].getStave && col.notes[i].getStave();
+        if (stave && stave.clef === "bass") {
+          targetStave = stave;
+          break;
+        }
+        if (!targetStave && stave) {
+          targetStave = stave;
+        }
+      }
+    }
+    drawInlineRoman(ctx, label, x, targetStave, opts || { yShift: 28 });
   }
 
   function groupTimelineByOnset(timeline) {
@@ -256,6 +326,14 @@ define([
       var analyzeConfig = (opts && opts.analyzeConfig) || { enabled: false, mode: {} };
       var keySignatureModel = opts && opts.keySignature; // KeySignature instance expected
       var analysisRenderer = (opts && opts.analysisRenderer) || "notater"; // notater|adapter|none
+      var inlineAnalyzer = null;
+      if (keySignatureModel && analyzeConfig && analyzeConfig.enabled && analysisRenderer !== "none") {
+        try {
+          inlineAnalyzer = new Analyze(keySignatureModel);
+        } catch (err) {
+          inlineAnalyzer = null;
+        }
+      }
       var systemGap = (opts && opts.systemGap) || 120; // Increased vertical spacing between staves
       var staffYOffset = (opts && opts.staffYOffset) || 0;
       
@@ -695,25 +773,8 @@ define([
               return midi;
             }
 
-            // Build notater (bass) once and reuse per column by swapping chord and x
-            var bridge = {
-              _x: 0,
-              getStartX: function(){ return this._x; },
-              getBottomY: function(){ return bassStave.getBottomY(); },
-              getContext: function(){ return ctx; },
-              isFirstBar: function(){ return false; },
-              position: { index: 0 }
-            };
-            var notater = StaveNotater.create('bass', {
-              stave: bridge,
-              keySignature: keySignatureModel,
-              analyzeConfig: analyzeConfig,
-              chord: { getNoteNumbers: function(){ return []; } }
-            });
-
             // Draw per onset column
-            groups.forEach(function(col, idx){
-              // Gather MIDI numbers across all notes in column
+            groups.forEach(function(col){
               var midiSet = Object.create(null);
               col.notes.forEach(function(t){
                 var keys = (typeof t.getKeys === 'function') ? t.getKeys() : [];
@@ -755,15 +816,16 @@ define([
                 }
               }
 
-              // Update bridge and chord, then draw label
-              // Remove extra offset: align annotation X with notehead (col.x)
-              // Compensate for StaveNotater.annotateOffsetX (default 8) so annotation is centered under notehead
-              // Nudge further left by 8px (approx. 1/8 notehead) for perfect centering
-              // Nudge further left by 4px for perfect centering
-              bridge._x = col.x - (StaveNotater.prototype.annotateOffsetX || 8) - 12;
-              bridge.position.index = idx + 1; // 1-based indexing similar to exercise view
-              notater.chord = { getNoteNumbers: function(){ return midi; } };
-              notater.notate(); // will call drawLabel() respecting analyzeConfig
+              attachInlineRomanAnnotation(
+                col,
+                midi,
+                analyzeConfig,
+                inlineAnalyzer,
+                ctx,
+                bassStave,
+                { yShift: 32 }
+              );
+
             });
           }
         } catch (e) {

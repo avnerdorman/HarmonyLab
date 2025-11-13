@@ -832,18 +832,31 @@ define([
         }
 
         var lines = this.wrapText(text);
-        this.drawTextLines(
-          lines,
-          x + offset + StaveNotater.prototype.annotateOffsetX,
-          y
-        );
+        var ctx = this.getContext();
+        var fontArgs = ctx.font.split(" ");
+        var originalFont = ctx.font;
+        var romanFontSize = 20;
+        if (text.length >= 3) {
+          romanFontSize = 18;
+        }
+        ctx.font = romanFontSize + " " + fontArgs[fontArgs.length - 1];
+        var baseX = x + offset + StaveNotater.prototype.annotateOffsetX;
+        var plainLen = text.replace(/\{.*?\}/g, "").replace(/\s+/g, "").length;
+        var shift = 0;
+        if (plainLen >= 5) {
+          shift = -10;
+        } else if (plainLen >= 3) {
+          shift = -6;
+        }
+        baseX += shift;
+        this.drawTextLines(lines, baseX, y);
+        ctx.font = originalFont;
 
-        var first_line_width =
-          this.getContext().measureText(lines[0]).width + offset;
+        var first_line_width = ctx.measureText(lines[0]).width;
 
         if (resolution_lines || one_resolution_line) {
           let label_width = first_line_width + 15;
-          let x_start = this.annotateOffsetX + x + label_width;
+          let x_start = baseX - StaveNotater.prototype.annotateOffsetX + label_width;
           let stroke_length = this.stave.width - label_width;
           if (extra_wide_figures) {
             x_start += 10;
@@ -863,7 +876,7 @@ define([
 
         if (applied_arrow) {
           let width = this.stave.width;
-          let x_start = this.annotateOffsetX + x + first_line_width / 2;
+          let x_start = baseX - StaveNotater.prototype.annotateOffsetX + first_line_width / 2;
           let x_end = this.annotateOffsetX + x + width;
           ctx.beginPath();
           ctx.lineWidth = 1.5;
