@@ -426,12 +426,12 @@ define(["lodash", "app/config"], function (_, Config) {
         exercise.exerciseList = definition.exerciseList.slice(0);
       }
 
-      exercise.analysis = ANALYSIS_SETTINGS;
+      exercise.analysis = _.cloneDeep(ANALYSIS_SETTINGS);
       if (definition.hasOwnProperty("analysis") && definition.analysis) {
         Object.assign(exercise.analysis, definition.analysis);
       }
 
-      exercise.highlight = HIGHLIGHT_SETTINGS;
+      exercise.highlight = _.cloneDeep(HIGHLIGHT_SETTINGS);
       if (definition.hasOwnProperty("highlight") && definition.highlight) {
         Object.assign(exercise.highlight, definition.highlight);
       }

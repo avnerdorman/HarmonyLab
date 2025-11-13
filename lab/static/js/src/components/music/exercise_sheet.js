@@ -394,6 +394,36 @@ define([
           this._updateChoraleViewport(score);
           var canvas = this.el[0];
           var display = definition.getDisplay() || {};
+          var analyzeConfig = _.cloneDeep(this.getAnalyzeConfig() || {});
+          var wantsRomans = !!display.showRomans;
+          var wantsFigures = !!display.showFigures;
+          var wantsChordLabels = !!display.showChordLabels;
+          var wantsAnalysis = wantsRomans || wantsFigures || wantsChordLabels;
+          // Force-enable roman numerals in chorale mode if not explicitly requested
+          // User requested: "just show the roman numerals" regardless of prior display flags.
+          if (!wantsRomans) {
+            wantsRomans = true;
+          }
+          // Ensure analysis renderer is not suppressed
+          if (!display.analysisRenderer) {
+            display.analysisRenderer = 'notater';
+          }
+          if (wantsAnalysis) {
+            analyzeConfig.enabled = true;
+            analyzeConfig.mode = analyzeConfig.mode || {};
+            if (wantsRomans) {
+              analyzeConfig.mode.roman_numerals = true;
+            }
+            if (wantsFigures) {
+              analyzeConfig.mode.thoroughbass = true;
+              if (display.figureStyle === "figures_abbrev") {
+                analyzeConfig.mode.abbreviate_thoroughbass = true;
+              }
+            }
+            if (wantsChordLabels) {
+              analyzeConfig.mode.chord_labels = true;
+            }
+          }
           var startMeasure =
             (this._chorale && typeof this._chorale.startMeasure === "number"
               ? this._chorale.startMeasure
@@ -408,7 +438,7 @@ define([
               ? this.exerciseContext.grader.getPlayedNoteIds()
               : null,
             // Analysis wiring for chorale path (Notater bridge inside adapter)
-            analyzeConfig: this.getAnalyzeConfig(),
+            analyzeConfig: analyzeConfig,
             keySignature: this.keySignature,
             analysisRenderer: display.analysisRenderer || "notater", // notater|adapter|none
             staffYOffset: staffYOffset

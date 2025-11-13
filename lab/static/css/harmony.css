@@ -126,22 +126,27 @@ body,
   z-index: 1;
 }
 #staffwrapper {
-  height: 320px;
-  overflow: hidden;
+  height: 360px;
+  overflow-x: auto;
   overflow-y: hidden;
 }
 #staff,
 #instruction-panel,
 .header {
-  width: 50rem;
+  width: 95vw;
+  max-width: 85rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 #staff {
+  min-width: 52rem;
   height: 350px;
   position: static;
   z-index: 1;
-  margin: 0;
+  margin: 0 auto;
   border: 0px solid black;
   padding: 0;
+  display: block;
 }
 #instruction-panel {
   margin: 0rem auto;

@@ -1,50 +1,42 @@
 # Copilot instructions for HarmonyLab
 
-This repository is a Django app with a RequireJS-based frontend that renders music notation via VexFlow on an HTML Canvas. Use this guide to make high-quality changes quickly and safely.
+This repo is a Django app with a RequireJS (AMD) frontend that draws music notation with VexFlow on an HTML Canvas. Use this as a quick map to make focused, correct changes.
 
-## Architecture quick map
-- Backend: Django (class-based views), templates in `lab/templates`, settings under `harmony/settings/*`.
-- Frontend loader: RequireJS (AMD). Bootstrap in `lab/static/js/src/main.js` reads `config.app_module` and loads the selected app.
-- Frontend apps: `lab/static/js/src/components/app/*` (e.g., `play.js`, `exercise.js`). Each composes subcomponents (piano, MIDI, menus, music sheet).
-- Notation rendering: VexFlow (Canvas backend). Core pipeline:
-  Django view → template with `<canvas id="staff">` → RequireJS `main.js` → app component → Music component → Sheet (`play_sheet.js` / `exercise_sheet.js`) → `stave.js` + `stave_notater.js` + `stave_note_factory.js` → VexFlow draw.
-- RequireJS config: built in `harmony/settings/requirejs.py`, injected via `RequirejsContext` in `lab/views.py`, consumed in `lab/templates/__base.html`.
+## Big picture
+- Request flow: Django view → template (`lab/templates/*.html`) → RequireJS `main.js` → app module (`components/app/*`) → music layer (`components/music/*`) → VexFlow draw (Canvas).
+- RequireJS config is produced in `harmony/settings/requirejs.py`, wrapped by `RequirejsContext` (see `lab/views.py`), and injected in `lab/templates/__base.html` with `requirejs.config(requirejs.config_json)`.
+- Optional build: if `data/requirejs/build.json` exists with `{ "main": "main-<hash>" }`, `app/main` resolves to `static/js/build/<hash>`. Otherwise, modules load one-by-one in debug.
 
-## Key files to know
-- Django → RequireJS wiring: `lab/views.py` (`RequirejsTemplateView`, `PlayView`) and `lab/templates/__base.html`.
-- App bootstrap: `lab/static/js/src/main.js`.
-- Play app: `lab/static/js/src/components/app/play.js`.
-- Notation core:
-  - `.../music/play_sheet.js` and `.../music/exercise_sheet.js`
-  - `.../music/stave.js` (staves, voices, connectors, formatting)
-  - `.../music/stave_notater.js` (analytical overlays)
-  - `.../music/stave_note_factory.js` (StaveNote creation, accidentals, styles)
-- VexFlow vendor: `lab/static/js/lib/vexflow.js`.
+## Where things live (examples)
+- Bootstrap: `lab/static/js/src/main.js` (reads `module.config().app_module`, then `require([app_module]).ready`).
+- App modules: `lab/static/js/src/components/app/{play,exercise,manage,debug_analysis}.js`.
+- Notation core: `components/music/{play_sheet.js,exercise_sheet.js,stave.js,stave_notater.js,stave_note_factory.js}`.
+- Vendor libs: `lab/static/js/lib/{require.js,vexflow.js,Tone.js,lodash.js,jquery.js}`.
 
-## Conventions & patterns
-- AMD modules (RequireJS): keep module paths stable; update `paths` only via `harmony/settings/requirejs.py` when necessary.
-- Rendering uses `Vex.Flow.Renderer.Backends.CANVAS`; prefer consistent Canvas metrics; don’t mix SVG unless you update all sheet components.
-- `stave_note_factory.js` centralizes accidentals, key styles, and highlight logic; modify here for notation-wide behavior changes.
-- `stave.js` controls measure layout and Formatter usage; adjust widths here, not in sheets, unless view-specific.
-- Django views select the active app via `requirejs_app` (e.g., `"app/components/app/play"`).
+## Patterns that matter
+- Pick the app per view via `requirejs_app` on a `RequirejsTemplateView` (e.g., `PlayView.requirejs_app = "app/components/app/play"`).
+- Pass data to an app by calling `RequirejsContext.set_module_params(<moduleId>, params)` in the Django view; the AMD module reads it via `module.config()` (see `components/app/exercise.js`).
+- Keep AMD paths stable; change `paths` only in `harmony/settings/requirejs.py`.
+- Rendering uses VexFlow Canvas; don’t mix SVG unless you update all sheet components.
+- Cross-cutting notation rules live in `stave_note_factory.js` (accidentals, highlight styles) and layout lives in `stave.js` (voices, connectors, widths). Prefer changing these before touching sheets.
 
-## Typical change flows
-- Add a new music feature: extend or compose in `app/*`, add logic in `music/*` components, create utilities in `music/utils` if needed, and wire via RequireJS.
-- Adjust notation layout: prefer changes in `stave.js` and `stave_note_factory.js`; only touch sheets for mode-specific UI.
-- Update base template/assets: change `lab/templates/__base.html`; ensure RequireJS config still injects `requirejs.config_json`.
+## Local dev workflow (macOS/Linux)
+- Database: PostgreSQL with a DB named `analyticpiano` (see `harmony/settings/local.py`). Set `DJANGO_SETTINGS_MODULE=harmony.settings.local`.
+- Run: `./manage.py makemigrations && ./manage.py migrate && ./manage.py runserver` (ensure Postgres is running). Create a superuser if you need to log in.
+- Security for dev: `DisableCSPMiddleware` is enabled in `local.py` to allow RequireJS/Tone.js; never copy this to production.
 
-## Testing & verification
-- Prefer adding small UI tests (if applicable) and targeted Django tests in `tests/`.
-- For front-end rendering, verify Play view (`lab/templates/play.html`) renders `<canvas id="staff">` and shows expected staves/voices.
-- Keep changes to vendored VexFlow minimal; document any custom patches (e.g., stem height adjustments) in commit messages.
+## Useful views and tooling
+- Play: `lab/views.py::PlayView` renders `lab/templates/play.html` and boots `app/components/app/play`.
+- Exercises: `PlaylistView`/`ExerciseView` boot `app/components/app/exercise` and pass the exercise JSON via `set_module_params` → `module.config()`.
+- Debug page: `ChoraleAnalysisDebugView` uses `app/components/app/debug_analysis`.
+- Dev-only corpus endpoint: `dev_corpus_bach_json` serves JSON from `data/corpus/bach/*.json` when `DEBUG=True`.
 
-## Gotchas
-- Accidentals and highlight styles are applied via modifiers; unison/part-specific rendering is handled specially in `stave_note_factory.js`.
-- Key signature/alterations state is threaded through sheet → stave → note factory; keep this immutable across measures unless you update cancellations.
-- RequireJS optimizer/bundle may be configured; ensure new modules are addressable both debug and optimized modes.
+## Gotchas (project-specific)
+- Exercise data enters the JS app through `module.config()` in `components/app/exercise.js` (search for “EXERCISE DATA ENTERS HERE”). Keep the shape consistent with `apps/exercises.models.Exercise.data`.
+- Chorale layout uses special stem/voice handling in `stave_note_factory.js` (see `CHORALE_FORMAT` paths) — be careful when changing stem directions or full-context logic.
+- Frontend AMD modules live under `app` path (`static/js/src`); don’t move files without updating `harmony/settings/requirejs.py`.
 
-## Safe-commit checklist
-- Touched files only where the responsibility belongs (sheet vs. stave vs. note factory).
-- Verified RequireJS paths and app module load.
-- Confirmed Canvas render still works and analytics overlays paint correctly.
-- Added/updated tests or quick manual steps in PR description.
+## Safe-change checklist
+- If changing notation behavior, start in `stave_note_factory.js` or `stave.js`; only then update `*sheet.js` if mode-specific.
+- If adding a new app/module, wire it by setting `requirejs_app` in a Django view and (if needed) pass config via `set_module_params`.
+- After changes, load Play (`/play`) and an Exercise page to verify `<canvas id="staff">` draws and overlays render.

@@ -41,12 +41,23 @@ define([], function () {
     var timeline = [];
     var id = 0;
     if (!score || !score.measures || !score.measures.length) return timeline;
-    var maxMeasures = (opts.maxMeasures != null) ? opts.maxMeasures : score.measures.length;
-    var numMeasures = Math.min(score.measures.length, maxMeasures);
+
+    var totalMeasures = score.measures.length;
+    var startMeasure = Math.max(0, opts.startMeasure || 0);
+    if (startMeasure >= totalMeasures) {
+      startMeasure = Math.max(0, totalMeasures - 1);
+    }
+
+    var maxMeasures =
+      opts.maxMeasures != null ? opts.maxMeasures : totalMeasures;
+    // maxMeasures represents how many measures to include starting at startMeasure.
+    var endMeasure = Math.min(totalMeasures, startMeasure + maxMeasures);
+    var numMeasures = Math.max(0, endMeasure - startMeasure);
     
     // Track cumulative onset per measure (all measures start at the end of the previous measure)
     var cumulativeOnsetByMeasure = [0]; // measure 0 starts at tick 0
-    for (var m = 0; m < numMeasures; m++) {
+    for (var rel = 0; rel < numMeasures; rel++) {
+      var m = startMeasure + rel;
       var meas = score.measures[m];
       var maxDuration = 0;
       // Find the longest voice duration in this measure to know the measure's total tick length
@@ -62,14 +73,17 @@ define([], function () {
         });
       });
       // Next measure starts after this one
-      if (m + 1 < numMeasures) {
-        cumulativeOnsetByMeasure.push(cumulativeOnsetByMeasure[m] + maxDuration);
+      if (rel + 1 < numMeasures) {
+        cumulativeOnsetByMeasure.push(
+          cumulativeOnsetByMeasure[rel] + maxDuration
+        );
       }
     }
 
-    for (var m = 0; m < numMeasures; m++) {
+    for (var rel = 0; rel < numMeasures; rel++) {
+      var m = startMeasure + rel;
       var meas = score.measures[m];
-      var measureStartTick = cumulativeOnsetByMeasure[m];
+      var measureStartTick = cumulativeOnsetByMeasure[rel];
       ['treble', 'bass'].forEach(function(staffName) {
         var staff = meas.staves[staffName];
         if (!staff || !staff.voices) return;
@@ -97,14 +111,13 @@ define([], function () {
       });
     }
     
-    // Sort timeline by onset (and secondarily by midi for deterministic ordering)
-    timeline.sort(function(a, b) {
-      if (a.onset !== b.onset) return a.onset - b.onset;
-      return a.midi - b.midi;
-    });
-    // Do NOT reassign IDs after sorting. Rendering assigns ids sequentially in score order,
-    // and the grader stores those ids to highlight played noteheads. Reassigning here caused
-    // mismatched highlights across voices when multiple notes shared an onset.
+    // IMPORTANT: keep timeline in the same insertion order used by the renderer so
+    // event.id values correspond to rendered notehead ids. Previously this function
+    // performed a final sort by onset which changed ordering but left event.id values
+    // as originally assigned; that produced a mismatch between grader ids and
+    // renderer-assigned notehead ids and caused incorrect highlights. If callers
+    // need onset-ordered windows, they should compute them separately without
+    // changing the timeline array itself.
     
     return timeline;
   }
