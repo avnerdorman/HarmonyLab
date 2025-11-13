@@ -1,6 +1,11 @@
 /* global define: false */
 
-define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_, Vex, StaveNotater) {
+define([
+  "lodash",
+  "vexflow",
+  "app/components/music/stave_notater",
+  "app/components/music/score_timeline",
+], function (_, Vex, StaveNotater, ScoreTimeline) {
   "use strict";
 
   function durToVF(d) {
@@ -44,6 +49,84 @@ define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_,
     }
     
     return alterations;
+  }
+
+  function groupTimelineByOnset(timeline) {
+    var onsetMap = Object.create(null);
+    var ordered = [];
+    if (!timeline) return ordered;
+    timeline.forEach(function (ev) {
+      var onset = ev.onset;
+      if (!Object.prototype.hasOwnProperty.call(onsetMap, onset)) {
+        var measureIdx =
+          typeof ev.measureIndex === "number" ? ev.measureIndex : 0;
+        onsetMap[onset] = {
+          onset: onset,
+          events: [],
+          measureIndex: measureIdx,
+        };
+        ordered.push(onsetMap[onset]);
+      }
+      onsetMap[onset].events.push(ev);
+      if (typeof ev.measureIndex === "number") {
+        if (typeof onsetMap[onset].measureIndex === "number") {
+          onsetMap[onset].measureIndex = Math.min(
+            onsetMap[onset].measureIndex,
+            ev.measureIndex
+          );
+        } else {
+          onsetMap[onset].measureIndex = ev.measureIndex;
+        }
+      }
+    });
+    ordered.sort(function (a, b) {
+      if (a.onset !== b.onset) return a.onset - b.onset;
+      return a.measureIndex - b.measureIndex;
+    });
+    return ordered;
+  }
+
+  function buildAnalysisWindows(timeline) {
+    var windows = groupTimelineByOnset(timeline);
+    var activeNotes = [];
+    windows.forEach(function (win) {
+      var onset = win.onset;
+      activeNotes = activeNotes.filter(function (note) {
+        return note.end > onset;
+      });
+      win.events.forEach(function (ev) {
+        activeNotes.push({
+          midi: ev.midi,
+          end: ev.onset + ev.duration,
+          measureIndex:
+            typeof ev.measureIndex === "number" ? ev.measureIndex : win.measureIndex,
+        });
+      });
+      var midiMap = Object.create(null);
+      activeNotes.forEach(function (n) {
+        midiMap[n.midi] = true;
+      });
+      win.midiStack = Object.keys(midiMap)
+        .map(function (k) {
+          return parseInt(k, 10);
+        })
+        .sort(function (a, b) {
+          return a - b;
+        });
+      var attackMap = Object.create(null);
+      win.events.forEach(function (ev) {
+        attackMap[ev.midi] = true;
+      });
+      win.attackKey = Object.keys(attackMap)
+        .map(function (k) {
+          return parseInt(k, 10);
+        })
+        .sort(function (a, b) {
+          return a - b;
+        })
+        .join(",");
+    });
+    return windows;
   }
 
   function itemToTickable(clef, item, octaveShift, idState, keySignatureAlterations) {
@@ -199,6 +282,14 @@ define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_,
         return;
       }
       var measuresToRender = score.measures.slice(startMeasure, startMeasure + numMeasures);
+      var timeline = ScoreTimeline && ScoreTimeline.buildTimeline
+        ? ScoreTimeline.buildTimeline(score, {
+            startMeasure: startMeasure,
+            maxMeasures: numMeasures,
+          })
+        : [];
+      var analysisWindows = buildAnalysisWindows(timeline);
+      var analysisWindowIdx = 0;
       var availableWidth = width - margin.left - margin.right;
       var trebleY = margin.top + 30 + staffYOffset;
       var bassY = trebleY + systemGap;
@@ -631,8 +722,38 @@ define(["lodash", "vexflow", "app/components/music/stave_notater"], function (_,
                   if (m !== null) midiSet[m] = true;
                 }
               });
-              var midi = Object.keys(midiSet).map(function(k){ return parseInt(k,10); }).sort(function(a,b){return a-b;});
+              var attackList = Object.keys(midiSet).map(function(k){ return parseInt(k,10); }).sort(function(a,b){return a-b;});
+              var midi = attackList.slice();
               if (!midi.length) return;
+
+              if (analysisWindows.length) {
+                var attackKey = attackList.join(",");
+                var matchedWindow = null;
+                var matchedIndex = analysisWindowIdx;
+                for (var seek = analysisWindowIdx; seek < analysisWindows.length; seek++) {
+                  var win = analysisWindows[seek];
+                  if (win.measureIndex < absoluteMeasureIndex) {
+                    analysisWindowIdx = seek + 1;
+                    continue;
+                  }
+                  if (!matchedWindow) {
+                    matchedWindow = win;
+                    matchedIndex = seek;
+                  }
+                  if (win.measureIndex > absoluteMeasureIndex) {
+                    break;
+                  }
+                  if (win.attackKey === attackKey) {
+                    matchedWindow = win;
+                    matchedIndex = seek;
+                    break;
+                  }
+                }
+                if (matchedWindow && matchedWindow.midiStack && matchedWindow.midiStack.length) {
+                  midi = matchedWindow.midiStack.slice();
+                  analysisWindowIdx = matchedIndex + 1;
+                }
+              }
 
               // Update bridge and chord, then draw label
               // Remove extra offset: align annotation X with notehead (col.x)
