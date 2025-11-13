@@ -24,8 +24,18 @@ define([
     ctx.save();
     ctx.font = "18px JazzSerifs";
     ctx.fillStyle = "#000";
-    ctx.textAlign = "center";
-    ctx.fillText(label, Math.round(columnX), y);
+
+    var glyphs = Array.from(label);
+    var midIndex = glyphs.length ? Math.floor((glyphs.length - 1) / 2) : 0;
+    var leftText =
+      midIndex > 0 ? glyphs.slice(0, midIndex).join("") : "";
+    var centerGlyph = glyphs[midIndex] || "";
+    var leftWidth = leftText ? ctx.measureText(leftText).width : 0;
+    var centerWidth = centerGlyph ? ctx.measureText(centerGlyph).width : 0;
+    var startX = Math.round(columnX - leftWidth - centerWidth / 2);
+
+    ctx.textAlign = "left";
+    ctx.fillText(label, startX, y);
     ctx.restore();
   }
 
@@ -42,6 +52,62 @@ define([
     "i3": "3",
     "q e": "13",
   };
+
+  function noteCenterX(note) {
+    if (!note) return null;
+    if (typeof note.getBoundingBox === "function") {
+      var bb = note.getBoundingBox();
+      if (bb) {
+        if (typeof bb.getX === "function" && typeof bb.getW === "function") {
+          return bb.getX() + bb.getW() / 2;
+        }
+        if (bb.x !== undefined && bb.w !== undefined) {
+          return bb.x + bb.w / 2;
+        }
+      }
+    }
+    if (typeof note.getAbsoluteX === "function") {
+      var baseX = note.getAbsoluteX();
+      var width =
+        typeof note.getWidth === "function" ? note.getWidth() : null;
+      if (typeof width === "number" && !isNaN(width)) {
+        return baseX + width / 2;
+      }
+      if (typeof note.getGlyph === "function" && note.getGlyph()) {
+        var glyph = note.getGlyph();
+        if (glyph && typeof glyph.getWidth === "function") {
+          return baseX + glyph.getWidth() / 2;
+        }
+      }
+      if (typeof note.getStemX === "function") {
+        return note.getStemX();
+      }
+      return baseX;
+    }
+    return null;
+  }
+
+  function getColumnCenterX(col) {
+    if (!col) return null;
+    if (typeof col.centerX === "number") {
+      return col.centerX;
+    }
+    var notes = (col && col.notes) || [];
+    var bassNote = notes.find(function (note) {
+      var stave = note && note.getStave && note.getStave();
+      return stave && stave.clef === "bass";
+    });
+    var targetNote = bassNote || notes[0] || null;
+    var center = noteCenterX(targetNote);
+    if (center === null && typeof col.x === "number") {
+      center = col.x;
+    }
+    if (center === null) {
+      return null;
+    }
+    col.centerX = center;
+    return col.centerX;
+  }
 
   function computeRomanLabel(midi, analyzer) {
     if (!analyzer || !midi || !midi.length) return null;
@@ -115,16 +181,7 @@ define([
     if (!label) {
       return;
     }
-    var x =
-      col && typeof col.x === "number"
-        ? col.x
-        : null;
-    if (x === null && col && col.notes && col.notes.length) {
-      var candidate = col.notes[0];
-      if (candidate && typeof candidate.getAbsoluteX === "function") {
-        x = candidate.getAbsoluteX();
-      }
-    }
+    var x = getColumnCenterX(col);
     if (x === null) {
       return;
     }
