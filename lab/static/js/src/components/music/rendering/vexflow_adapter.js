@@ -29,12 +29,35 @@ define([
     ctx.restore();
   }
 
+  var FIGURE_TOKEN_MAP = {
+    "z": "6",
+    "z4": "6/4",
+    "z5": "6/5",
+    "u": "7",
+    "u3": "6/5",
+    "u5": "7/5",
+    "r": "4",
+    "r2": "4/2",
+    "r3": "4/3",
+    "i3": "3",
+    "q e": "13",
+  };
+
   function computeRomanLabel(midi, analyzer) {
     if (!analyzer || !midi || !midi.length) return null;
     try {
       var chordInfo = analyzer.to_chord(midi, "roman only");
       if (chordInfo && chordInfo.label) {
-        return chordInfo.label;
+        var label = chordInfo.label;
+        if (!label || label.indexOf("{") === -1) {
+          return label;
+        }
+        return label.replace(/\{([^}]+)\}/g, function (_, token) {
+          token = (token || "").trim();
+          if (!token) return "";
+          var mapped = FIGURE_TOKEN_MAP[token];
+          return mapped !== undefined ? mapped : "";
+        });
       }
     } catch (err) {
       return null;
